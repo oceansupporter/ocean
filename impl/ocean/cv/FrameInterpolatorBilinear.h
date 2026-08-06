@@ -1642,7 +1642,7 @@ inline void FrameInterpolatorBilinear::scale(const T* source, T* target, const u
 	ocean_assert(sourceX_s_targetX > 0.0);
 	ocean_assert(sourceY_s_targetY > 0.0);
 
-	if (sourceWidth == targetWidth && sourceHeight == targetHeight)
+	if (sourceWidth == targetWidth && sourceHeight == targetHeight && sourceX_s_targetX == 1.0 && sourceY_s_targetY == 1.0)
 	{
 		FrameConverter::subFrame<T>(source, target, sourceWidth, sourceHeight, targetWidth, targetHeight, tChannels, 0u, 0u, 0u, 0u, sourceWidth, sourceHeight, sourcePaddingElements, targetPaddingElements);
 		return;
@@ -5208,7 +5208,7 @@ void FrameInterpolatorBilinear::scale8BitPerChannel(const uint8_t* source, uint8
 	ocean_assert(sourceX_s_targetX > 0.0);
 	ocean_assert(sourceY_s_targetY > 0.0);
 
-	if (sourceWidth == targetWidth && sourceHeight == targetHeight)
+	if (sourceWidth == targetWidth && sourceHeight == targetHeight && sourceX_s_targetX == 1.0 && sourceY_s_targetY == 1.0)
 	{
 		FrameConverter::subFrame<uint8_t>(source, target, sourceWidth, sourceHeight, targetWidth, targetHeight, tChannels, 0u, 0u, 0u, 0u, sourceWidth, sourceHeight, sourcePaddingElements, targetPaddingElements);
 		return;
@@ -6665,7 +6665,7 @@ inline void FrameInterpolatorBilinear::scaleSubset<float, float, 1u>(const float
 	ocean_assert(targetWidth >= 1u && targetHeight >= 1u);
 	ocean_assert(sourceX_s_targetX > 0.0 && sourceY_s_targetY > 0.0);
 
-	ocean_assert(sourceWidth != targetWidth || sourceHeight != targetHeight);
+	ocean_assert(sourceWidth != targetWidth || sourceHeight != targetHeight || sourceX_s_targetX != 1.0 || sourceY_s_targetY != 1.0);
 
 	const unsigned int sourceStrideElements = sourceWidth * 1u + sourcePaddingElements;
 	const unsigned int targetStrideElements = targetWidth * 1u + targetPaddingElements;
@@ -6697,7 +6697,7 @@ inline void FrameInterpolatorBilinear::scaleSubset<float, float, 1u>(const float
 	Memory memoryHorizontalInterpolationLocations;
 	Memory memoryHorizontalInterpolationFactorsRight;
 
-	if (sourceWidth != targetWidth)
+	if (sourceWidth != targetWidth || sourceX_T_targetX != 1.0f)
 	{
 		// in case we are scaling the width of the frame, we use an intermediate buffer and pre-calculated interpolation locations and factors
 
