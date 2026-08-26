@@ -10,7 +10,7 @@
 
 #include "ocean/platform/win/Win.h"
 
-#include <vector>
+#include "ocean/base/ScopedObject.h"
 
 namespace Ocean
 {
@@ -68,6 +68,11 @@ class OCEAN_PLATFORM_WIN_EXPORT Registry
 		 */
 		using Names = Strings;
 
+		/**
+		 * Definition of a scoped object holding a registry key.
+		 */
+		using ScopedKey = ScopedObjectCompileTimeT<HKEY, HKEY, LSTATUS, RegCloseKey, ERROR_SUCCESS, true, nullptr>;
+
 	public:
 
 		/**
@@ -83,7 +88,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Registry
 		 * @param path Path and name of the key to open
 		 * @return Received key handle
 		 */
-		static HKEY openKey(const RootType root, const std::string& path);
+		[[nodiscard]] static ScopedKey openKey(const RootType root, const std::string& path);
 
 		/**
 		 * Opens a registry key and returns the received key handle.
@@ -91,14 +96,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Registry
 		 * @param name The name of the new sub key
 		 * @return Received key handle
 		 */
-		static HKEY openKey(const HKEY key, const std::string& name);
-
-		/**
-		 * Closes a registry key.
-		 * @param key Key to close
-		 * @return True, if succeeded
-		 */
-		static bool closeKey(const HKEY key);
+		[[nodiscard]] static ScopedKey openKey(const HKEY key, const std::string& name);
 
 		/**
 		 * Creates a new key.

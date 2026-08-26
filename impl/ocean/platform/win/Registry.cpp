@@ -38,55 +38,43 @@ HKEY Registry::translateRoot(const RootType root)
 	return nullptr;
 }
 
-HKEY Registry::openKey(const RootType root, const std::string& path)
+Registry::ScopedKey Registry::openKey(const RootType root, const std::string& path)
 {
-	if (path.empty())
+	if (!path.empty())
 	{
-		return nullptr;
+		ScopedKey key;
+		DWORD createdOrOpened = 0;
+
+		if (RegCreateKeyEx(translateRoot(root), String::toWString(path).c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &key.resetObject(), &createdOrOpened) == ERROR_SUCCESS)
+		{
+			return key;
+		}
 	}
 
-	HKEY key = nullptr;
-	DWORD createdOrOpened = 0;
-
-	if (RegCreateKeyEx(translateRoot(root), String::toWString(path).c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &key, &createdOrOpened) == ERROR_SUCCESS)
-	{
-		return key;
-	}
-
-	return nullptr;
+	return ScopedKey();
 }
 
-HKEY Registry::openKey(const HKEY key, const std::string& name)
+Registry::ScopedKey Registry::openKey(const HKEY key, const std::string& name)
 {
-	if (key == nullptr || name.empty())
+	if (key != nullptr && !name.empty())
 	{
-		return nullptr;
+		ScopedKey subKey;
+		DWORD createdOrOpened = 0;
+
+		if (RegCreateKeyEx(key, String::toWString(name).c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &subKey.resetObject(), &createdOrOpened) == ERROR_SUCCESS)
+		{
+			return subKey;
+		}
 	}
 
-	HKEY subKey = nullptr;
-	DWORD createdOrOpened = 0;
-
-	if (RegCreateKeyEx(key, String::toWString(name).c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &subKey, &createdOrOpened) == ERROR_SUCCESS)
-	{
-		return subKey;
-	}
-
-	return nullptr;
-}
-
-bool Registry::closeKey(const HKEY key)
-{
-	if (key == nullptr)
-	{
-		return false;
-	}
-
-	return RegCloseKey(key) == ERROR_SUCCESS;
+	return ScopedKey();
 }
 
 bool Registry::createKey(const RootType root, const std::string& path)
 {
-	return closeKey(openKey(root, path));
+	const ScopedKey key = openKey(root, path);
+
+	return key.isValid();
 }
 
 Registry::ValueType Registry::valueType(const HKEY key, const std::string& name)
@@ -126,12 +114,14 @@ Registry::ValueType Registry::valueType(const HKEY key, const std::string& name)
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const int value)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const bool result = setValue(key, name, value);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return setValue(*key, name, value);
+	}
 
-	return result;
+	return false;
 }
 
 bool Registry::setValue(const HKEY key, const std::string& name, const int value)
@@ -146,12 +136,14 @@ bool Registry::setValue(const HKEY key, const std::string& name, const int value
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const long long value)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const bool result = setValue(key, name, value);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return setValue(*key, name, value);
+	}
 
-	return result;
+	return false;
 }
 
 bool Registry::setValue(const HKEY key, const std::string& name, const long long value)
@@ -176,12 +168,14 @@ bool Registry::setValue(const HKEY key, const std::string& name, const std::stri
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const std::wstring& value)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const bool result = setValue(key, name, value);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return setValue(*key, name, value);
+	}
 
-	return result;
+	return false;
 }
 
 bool Registry::setValue(const HKEY key, const std::string& name, const std::wstring& value)
@@ -196,12 +190,14 @@ bool Registry::setValue(const HKEY key, const std::string& name, const std::wstr
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const Names& value)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const bool result = setValue(key, name, value);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return setValue(*key, name, value);
+	}
 
-	return result;
+	return false;
 }
 
 bool Registry::setValue(const HKEY key, const std::string& name, const Names& value)
@@ -251,12 +247,14 @@ bool Registry::setValue(const HKEY key, const std::string& name, const Names& va
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const unsigned char* value, const unsigned int size)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const bool result = setValue(key, name, value, size);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return setValue(*key, name, value, size);
+	}
 
-	return result;
+	return false;
 }
 
 bool Registry::setValue(const HKEY key, const std::string& name, const unsigned char* value, const unsigned int size)
@@ -271,12 +269,14 @@ bool Registry::setValue(const HKEY key, const std::string& name, const unsigned 
 
 int Registry::value(const RootType root, const std::string& path, const std::string& name, const int defaultValue)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const int result = value(key, name, defaultValue);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return value(*key, name, defaultValue);
+	}
 
-	return result;
+	return defaultValue;
 }
 
 int Registry::value(const HKEY key, const std::string& name, const int defaultValue)
@@ -302,12 +302,14 @@ int Registry::value(const HKEY key, const std::string& name, const int defaultVa
 
 long long Registry::value(const RootType root, const std::string& path, const std::string& name, const long long defaultValue)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const long long result = value(key, name, defaultValue);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return value(*key, name, defaultValue);
+	}
 
-	return result;
+	return defaultValue;
 }
 
 long long Registry::value(const HKEY key, const std::string& name, const long long defaultValue)
@@ -333,12 +335,14 @@ long long Registry::value(const HKEY key, const std::string& name, const long lo
 
 std::string Registry::value(const RootType root, const std::string& path, const std::string& name, const std::string& defaultValue)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const std::string result = value(key, name, defaultValue);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return value(*key, name, defaultValue);
+	}
 
-	return result;
+	return defaultValue;
 }
 
 std::string Registry::value(const HKEY key, const std::string& name, const std::string& defaultValue)
@@ -374,12 +378,14 @@ std::string Registry::value(const HKEY key, const std::string& name, const std::
 
 Registry::Names Registry::value(const RootType root, const std::string& path, const std::string& name, const Names& defaultValue)
 {
-	const HKEY key = openKey(root, path);
+	const ScopedKey key = openKey(root, path);
 
-	const Names result = value(key, name, defaultValue);
-	closeKey(key);
+	if (key.isValid())
+	{
+		return value(*key, name, defaultValue);
+	}
 
-	return result;
+	return defaultValue;
 }
 
 Registry::Names Registry::value(const HKEY key, const std::string& name, const Names& defaultValue)
@@ -425,16 +431,14 @@ Registry::Names Registry::value(const HKEY key, const std::string& name, const N
 
 Registry::Names Registry::values(const RootType root, const std::string& path)
 {
-	const HKEY key = openKey(root, path);
-	if (key == nullptr)
+	const ScopedKey key = openKey(root, path);
+
+	if (key.isValid())
 	{
-		return Names();
+		return values(*key);
 	}
 
-	const Names names = values(key);
-	closeKey(key);
-
-	return names;
+	return Names();
 }
 
 Registry::Names Registry::values(const HKEY key)
@@ -474,16 +478,14 @@ Registry::Names Registry::values(const HKEY key)
 
 Registry::Names Registry::keys(const RootType root, const std::string& path)
 {
-	const HKEY key = openKey(root, path);
-	if (key == nullptr)
+	const ScopedKey key = openKey(root, path);
+
+	if (key.isValid())
 	{
-		return Names();
+		return keys(*key);
 	}
 
-	const Names names = keys(key);
-	closeKey(key);
-
-	return names;
+	return Names();
 }
 
 Registry::Names Registry::keys(const HKEY key)
@@ -515,7 +517,7 @@ Registry::Names Registry::keys(const HKEY key)
 			break;
 		}
 
-		names.push_back(String::toAString(std::wstring(keyName.data(), keyNameSize)));
+		names.emplace_back(String::toAString(std::wstring(keyName.data(), keyNameSize)));
 	}
 
 	return names;

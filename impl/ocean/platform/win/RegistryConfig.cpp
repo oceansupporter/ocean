@@ -36,12 +36,10 @@ RegistryConfig::RegistryValue::RegistryValue(const HKEY key)
 	{
 		ocean_assert(subValues_.find(name) == subValues_.end());
 
-		HKEY subKey = Registry::openKey(key, name);
-		ocean_assert(subKey != nullptr);
+		const Registry::ScopedKey subKey = Registry::openKey(key, name);
+		ocean_assert(subKey.isValid());
 
-		subValues_[name] = RegistryValue(subKey);
-
-		Registry::closeKey(subKey);
+		subValues_[name] = RegistryValue(*subKey);
 	}
 
 	names = Registry::values(key);
@@ -352,20 +350,23 @@ bool RegistryConfig::RegistryValue::writeToRegistry(const HKEY key, const std::s
 
 		case TYPE_GROUP:
 		{
-			HKEY subKey = Registry::openKey(key, name);
+			const Registry::ScopedKey subKey = Registry::openKey(key, name);
+
+			if (!subKey.isValid())
+			{
+				return false;
+			}
 
 			bool oneSucceeded = false;
 
 			for (const Values::value_type& valuePair : subValues_)
 			{
 				const RegistryValue& value = dynamic_cast<const RegistryValue&>(valuePair.second);
-				if (value.writeToRegistry(subKey, valuePair.first))
+				if (value.writeToRegistry(*subKey, valuePair.first))
 				{
 					oneSucceeded = true;
 				}
 			}
-
-			Registry::closeKey(subKey);
 
 			return oneSucceeded;
 		}
@@ -401,44 +402,41 @@ bool RegistryConfig::read()
 {
 	values_.clear();
 
-	HKEY key = Registry::openKey(rootType_, path_);
-	if (key == nullptr)
+	const Registry::ScopedKey key = Registry::openKey(rootType_, path_);
+
+	if (!key.isValid())
 	{
 		return false;
 	}
 
-	Registry::Names names = Registry::keys(key);
+	Registry::Names names = Registry::keys(*key);
 
 	for (const std::string& name : names)
 	{
 		ocean_assert(values_.find(name) == values_.end());
 
-		HKEY subKey = Registry::openKey(key, name);
-		ocean_assert(subKey != nullptr);
+		const Registry::ScopedKey subKey = Registry::openKey(*key, name);
+		ocean_assert(subKey.isValid());
 
-		values_[name] = RegistryValue(subKey);
-
-		Registry::closeKey(subKey);
+		values_[name] = RegistryValue(*subKey);
 	}
 
-	names = Registry::values(key);
+	names = Registry::values(*key);
 
 	for (const std::string& name : names)
 	{
 		ocean_assert(values_.find(name) == values_.end());
 
-		values_[name] = RegistryValue(key, name);
+		values_[name] = RegistryValue(*key, name);
 	}
-
-	Registry::closeKey(key);
 
 	return true;
 }
 
 bool RegistryConfig::write()
 {
-	HKEY key = Registry::openKey(rootType_, path_);
-	if (key == nullptr)
+	const Registry::ScopedKey key = Registry::openKey(rootType_, path_);
+	if (!key.isValid())
 	{
 		return false;
 	}
@@ -448,13 +446,11 @@ bool RegistryConfig::write()
 	for (const Values::value_type& valuePair : values_)
 	{
 		const RegistryValue& value = dynamic_cast<const RegistryValue&>(valuePair.second);
-		if (value.writeToRegistry(key, valuePair.first))
+		if (value.writeToRegistry(*key, valuePair.first))
 		{
 			oneSucceeded = true;
 		}
 	}
-
-	Registry::closeKey(key);
 
 	if (oneSucceeded)
 	{
