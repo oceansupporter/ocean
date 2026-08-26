@@ -33,6 +33,9 @@ Window::Window(HINSTANCE applicationInstance, const std::wstring& name, const HW
 
 Window::~Window()
 {
+	ocean_assert(dc_ == nullptr);
+	ocean_assert(handle_ == nullptr);
+
 	if (holdsClassReference_)
 	{
 		const ScopedLock scopedLock(classMapLock());
@@ -47,12 +50,12 @@ Window::~Window()
 
 		if (iClass->second == 0u)
 		{
-			UnregisterClass(className_.c_str(), applicationInstance_);
+			const BOOL result = UnregisterClass(className_.c_str(), applicationInstance_);
+			ocean_assert_and_suppress_unused(result == TRUE, result);
+
 			windowClassMap.erase(iClass);
 		}
 	}
-
-	ReleaseDC(handle_, dc_);
 }
 
 bool Window::initialize(const HICON icon, const std::string& windowClass)
@@ -265,7 +268,7 @@ bool Window::createWindow()
 
 	dc_ = GetDC(handle_);
 
-	SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG_PTR)(this));
 
 	return true;
 }
@@ -308,6 +311,24 @@ void Window::onShow(const bool /*visible*/)
 void Window::onDestroy()
 {
 	// nothing to do here
+}
+
+void Window::onDestroyed()
+{
+	if (handle_ != nullptr)
+	{
+		ocean_assert(dc_ != nullptr);
+
+		const int resultDC = ReleaseDC(handle_, dc_);
+		ocean_assert_and_suppress_unused(resultDC == 1, resultDC);
+
+		dc_ = nullptr;
+
+		const LONG_PTR previousPointer = SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG_PTR)(nullptr));
+		ocean_assert_and_suppress_unused(previousPointer == LONG_PTR(this), previousPointer);
+
+		handle_ = nullptr; // we do not call DestroyWindow() because the window has been destroyed already
+	}
 }
 
 void Window::onResize(const unsigned int /*clientWidth*/, const unsigned int /*clientHeight*/)
@@ -485,6 +506,10 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		case WM_DESTROY:
 			window->onDestroy();
 			return 0;
+
+		case WM_NCDESTROY:
+			window->onDestroyed();
+			break;
 
 		case WM_DROPFILES:
 		{

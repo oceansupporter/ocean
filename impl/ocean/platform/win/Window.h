@@ -12,8 +12,6 @@
 
 #include "ocean/base/Lock.h"
 
-#include <map>
-
 namespace Ocean
 {
 
@@ -263,9 +261,14 @@ class OCEAN_PLATFORM_WIN_EXPORT Window
 		virtual void onShow(const bool visible);
 
 		/**
-		 * Function for a destroy event.
+		 * Function for an event informing the window that is will be destroyed.
 		 */
 		virtual void onDestroy();
+
+		/**
+		 * Function for an event informing the window that is has been destroyed.
+		 */
+		virtual void onDestroyed();
 
 		/**
 		 * Function for window resize event.
