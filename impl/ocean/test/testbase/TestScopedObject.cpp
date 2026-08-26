@@ -133,6 +133,30 @@ bool TestScopedObject::testRuntime(const double testDuration)
 	Validation validation(randomGenerator);
 
 	{
+		// testing detaching an object
+
+		using ScopedObject = ScopedObjectT<Object*>;
+
+		const uint64_t detachUniqueId = Manager::get().uniqueId();
+		Object* detachedObject = nullptr;
+
+		{
+			ScopedObject scopedObject(createObject(detachUniqueId), &TestScopedObject::releaseObject);
+
+			detachedObject = scopedObject.detach();
+
+			OCEAN_EXPECT_FALSE(validation, scopedObject.isValid());
+			OCEAN_EXPECT_TRUE(validation, Manager::get().hasObject(detachUniqueId));
+		}
+
+		OCEAN_EXPECT_TRUE(validation, Manager::get().hasObject(detachUniqueId));
+
+		releaseObject(detachedObject);
+
+		OCEAN_EXPECT_FALSE(validation, Manager::get().hasObject(detachUniqueId));
+	}
+
+	{
 		// testing the default release function
 
 		using ScopedObject = ScopedObjectT<Object*>;
@@ -227,6 +251,30 @@ bool TestScopedObject::testCompileTime(const double testDuration)
 
 	RandomGenerator randomGenerator;
 	Validation validation(randomGenerator);
+
+	{
+		// testing detaching an object
+
+		using ScopedObject = ScopedObjectCompileTimeVoidT<Object*, &TestScopedObject::releaseObject>;
+
+		const uint64_t detachUniqueId = Manager::get().uniqueId();
+		Object* detachedObject = nullptr;
+
+		{
+			ScopedObject scopedObject(createObject(detachUniqueId));
+
+			detachedObject = scopedObject.detach();
+
+			OCEAN_EXPECT_FALSE(validation, scopedObject.isValid());
+			OCEAN_EXPECT_TRUE(validation, Manager::get().hasObject(detachUniqueId));
+		}
+
+		OCEAN_EXPECT_TRUE(validation, Manager::get().hasObject(detachUniqueId));
+
+		releaseObject(detachedObject);
+
+		OCEAN_EXPECT_FALSE(validation, Manager::get().hasObject(detachUniqueId));
+	}
 
 	{
 		// testing object which needs to be released

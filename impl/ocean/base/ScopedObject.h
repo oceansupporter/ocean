@@ -105,6 +105,12 @@ class ScopedObjectT
 		const T& operator*() const;
 
 		/**
+		 * Detaches the wrapped object without invoking the release function and transfers ownership to the caller.
+		 * @return The detached object
+		 */
+		T detach();
+
+		/**
 		 * Explicitly releases the wrapped object.
 		 */
 		void release();
@@ -236,6 +242,12 @@ class ScopedObjectCompileTimeT
 		T& resetObject(const bool needsRelease = true);
 
 		/**
+		 * Detaches the wrapped object without invoking the release function and transfers ownership to the caller.
+		 * @return The detached object, tInvalidValue if no valid object was wrapped
+		 */
+		T detach();
+
+		/**
 		 * Explicitly releases the wrapped object.
 		 */
 		void release();
@@ -356,6 +368,17 @@ const T& ScopedObjectT<T, TReleaseValue, TReleaseFunction>::operator*() const
 }
 
 template <typename T, typename TReleaseValue, typename TReleaseFunction>
+T ScopedObjectT<T, TReleaseValue, TReleaseFunction>::detach()
+{
+	T object = std::move(object_);
+
+	object_ = T();
+	releaseFunction_ = TReleaseFunction();
+
+	return object;
+}
+
+template <typename T, typename TReleaseValue, typename TReleaseFunction>
 void ScopedObjectT<T, TReleaseValue, TReleaseFunction>::release()
 {
 	if (releaseFunction_)
@@ -463,6 +486,17 @@ T& ScopedObjectCompileTimeT<T, TReleaseValue, TReleaseReturn, tReleaseFunction, 
 	needsRelease_ = needsRelease;
 
 	return object_;
+}
+
+template <typename T, typename TReleaseValue, typename TReleaseReturn, TReleaseReturn (*tReleaseFunction)(TReleaseValue), typename NotVoidTyper<TReleaseReturn>::Type tExpectedReturnValue, bool tCheckReturnValue, T tInvalidValue>
+T ScopedObjectCompileTimeT<T, TReleaseValue, TReleaseReturn, tReleaseFunction, tExpectedReturnValue, tCheckReturnValue, tInvalidValue>::detach()
+{
+	T object = std::move(object_);
+
+	object_ = tInvalidValue;
+	needsRelease_ = false;
+
+	return object;
 }
 
 template <typename T, typename TReleaseValue, typename TReleaseReturn, TReleaseReturn (*tReleaseFunction)(TReleaseValue), typename NotVoidTyper<TReleaseReturn>::Type tExpectedReturnValue, bool tCheckReturnValue, T tInvalidValue>
