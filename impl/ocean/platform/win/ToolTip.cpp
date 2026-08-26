@@ -27,29 +27,31 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 		return false;
 	}
 
-	const HWND hwndTip = CreateWindowExW(0, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-										GetParent(handle), nullptr, GetModuleHandleW(nullptr), nullptr);
+	const HWND parentHandle = GetParent(handle);
+	const HWND ownerHandle = parentHandle != nullptr ? parentHandle : handle;
 
-	ocean_assert(hwndTip != nullptr);
-	if (hwndTip == nullptr)
+	ScopedHWND hwndTip = ScopedHWND(CreateWindowExW(0, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, ownerHandle, nullptr, GetModuleHandleW(nullptr), nullptr));
+
+	ocean_assert(hwndTip.isValid());
+	if (!hwndTip.isValid())
 	{
 		return false;
 	}
 
 	TOOLINFOW toolInfo = {0};
 	toolInfo.cbSize = TTTOOLINFOW_V1_SIZE;
-	toolInfo.hwnd = GetParent(handle);
+	toolInfo.hwnd = ownerHandle;
 	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
 	toolInfo.uId = UINT_PTR(handle);
 	toolInfo.lpszText = const_cast<wchar_t*>(text.c_str());
 
-	if (SendMessageW(hwndTip, TTM_ACTIVATE, TRUE, 0))
+	if (SendMessageW(*hwndTip, TTM_ACTIVATE, TRUE, 0))
 	{
 		ocean_assert(false && "This should never happen!");
 		return false;
 	}
 
-	if (!SendMessageW(hwndTip, TTM_ADDTOOLW, 0, LPARAM(&toolInfo)))
+	if (!SendMessageW(*hwndTip, TTM_ADDTOOLW, 0, LPARAM(&toolInfo)))
 	{
 		ocean_assert(false && "This should never happen!");
 		return false;
@@ -58,7 +60,7 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 	// check whether we have a multiline tool tip
 	if (text.find(L'\n') != std::string::npos)
 	{
-		HFONT fontHandle = HFONT(SendMessageW(hwndTip, WM_GETFONT, 0, 0));
+		HFONT fontHandle = HFONT(SendMessageW(*hwndTip, WM_GETFONT, 0, 0));
 
 		if (!fontHandle)
 		{
@@ -113,11 +115,13 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 			start = end + 1;
 		}
 
-		if (max > SendMessageW(hwndTip, TTM_GETMAXTIPWIDTH, 0, 0))
+		if (max > SendMessageW(*hwndTip, TTM_GETMAXTIPWIDTH, 0, 0))
 		{
-			SendMessageW(hwndTip, TTM_SETMAXTIPWIDTH, 0, max);
+			SendMessageW(*hwndTip, TTM_SETMAXTIPWIDTH, 0, max);
 		}
 	}
+
+	hwndTip.detach(); // the owner window will destroy the tooltip window
 
 	return true;
 }

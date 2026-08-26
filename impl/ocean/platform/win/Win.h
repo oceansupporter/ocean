@@ -10,6 +10,8 @@
 
 #include "ocean/platform/Platform.h"
 
+#include "ocean/base/ScopedObject.h"
+
 #ifndef _WINDOWS
 	#error This library is available on windows platforms only!
 #endif // _WINDOWS
@@ -50,6 +52,12 @@ namespace Win
 #else
 	#define OCEAN_PLATFORM_WIN_EXPORT
 #endif
+
+/**
+ * Definition of a scoped object holding a window handle.
+ * The object calls DestroyWindow() when releasing a valid handle, so it must be destroyed by the thread that created the window.
+ */
+using ScopedHWND = ScopedObjectCompileTimeT<HWND, HWND, BOOL, DestroyWindow, TRUE, true, nullptr>;
 
 }
 
