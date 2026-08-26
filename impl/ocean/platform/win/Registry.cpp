@@ -131,7 +131,7 @@ bool Registry::setValue(const HKEY key, const std::string& name, const int value
 		return false;
 	}
 
-	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_DWORD, (BYTE*)&value, sizeof(value)) == ERROR_SUCCESS;
+	return RegSetValueExW(key, String::toWString(name).c_str(), 0, REG_DWORD, (BYTE*)&value, sizeof(value)) == ERROR_SUCCESS;
 }
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const long long value)
@@ -153,7 +153,7 @@ bool Registry::setValue(const HKEY key, const std::string& name, const long long
 		return false;
 	}
 
-	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_QWORD, (BYTE*)&value, sizeof(value)) == ERROR_SUCCESS;
+	return RegSetValueExW(key, String::toWString(name).c_str(), 0, REG_QWORD, (BYTE*)&value, sizeof(value)) == ERROR_SUCCESS;
 }
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const std::string& value)
@@ -185,7 +185,7 @@ bool Registry::setValue(const HKEY key, const std::string& name, const std::wstr
 		return false;
 	}
 
-	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_SZ, (const BYTE*)(value.c_str()), DWORD(sizeof(wchar_t) * (value.length() + 1))) == ERROR_SUCCESS;
+	return RegSetValueExW(key, String::toWString(name).c_str(), 0, REG_SZ, (const BYTE*)(value.c_str()), DWORD(sizeof(wchar_t) * (value.length() + 1))) == ERROR_SUCCESS;
 }
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const Names& value)
@@ -240,7 +240,7 @@ bool Registry::setValue(const HKEY key, const std::string& name, const Names& va
 		pointer[1] = L'\0';
 	}
 
-	const bool result = RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_MULTI_SZ, (BYTE*)(buffer.data()), DWORD(sizeof(wchar_t) * size)) == ERROR_SUCCESS;
+	const bool result = RegSetValueExW(key, String::toWString(name).c_str(), 0, REG_MULTI_SZ, (BYTE*)(buffer.data()), DWORD(sizeof(wchar_t) * size)) == ERROR_SUCCESS;
 
 	return result;
 }
@@ -264,7 +264,7 @@ bool Registry::setValue(const HKEY key, const std::string& name, const unsigned 
 		return false;
 	}
 
-	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_BINARY, (BYTE*)value, DWORD(size)) == ERROR_SUCCESS;
+	return RegSetValueExW(key, String::toWString(name).c_str(), 0, REG_BINARY, (BYTE*)value, DWORD(size)) == ERROR_SUCCESS;
 }
 
 int Registry::value(const RootType root, const std::string& path, const std::string& name, const int defaultValue)
@@ -290,7 +290,7 @@ int Registry::value(const HKEY key, const std::string& name, const int defaultVa
 	DWORD longValue = 0;
 	DWORD valueSize = sizeof(longValue);
 
-	const bool result = RegQueryValueEx(key, String::toWString(name).c_str(), 0, &type, (BYTE*)&longValue, &valueSize) == ERROR_SUCCESS;
+	const bool result = RegQueryValueExW(key, String::toWString(name).c_str(), 0, &type, (BYTE*)(&longValue), &valueSize) == ERROR_SUCCESS;
 
 	if (result && type == REG_DWORD)
 	{
@@ -323,7 +323,7 @@ long long Registry::value(const HKEY key, const std::string& name, const long lo
 	long long longLongValue = 0;
 	DWORD valueSize = sizeof(longLongValue);
 
-	const bool result = RegQueryValueEx(key, String::toWString(name).c_str(), 0, &type, (BYTE*)&longLongValue, &valueSize) == ERROR_SUCCESS;
+	const bool result = RegQueryValueExW(key, String::toWString(name).c_str(), 0, &type, (BYTE*)(&longLongValue), &valueSize) == ERROR_SUCCESS;
 
 	if (result && type == REG_QWORD)
 	{
@@ -357,7 +357,7 @@ std::string Registry::value(const HKEY key, const std::string& name, const std::
 	DWORD type = 0;
 	DWORD size = 0;
 
-	if (RegQueryValueEx(key, wideName.c_str(), 0, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_SZ || size == 0)
+	if (RegQueryValueExW(key, wideName.c_str(), 0, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_SZ || size == 0)
 	{
 		return defaultValue;
 	}
@@ -368,7 +368,7 @@ std::string Registry::value(const HKEY key, const std::string& name, const std::
 
 	DWORD bufferSize = DWORD((buffer.size() - 1) * sizeof(wchar_t));
 
-	if (RegQueryValueEx(key, wideName.c_str(), 0, &type, (BYTE*)(buffer.data()), &bufferSize) != ERROR_SUCCESS || type != REG_SZ)
+	if (RegQueryValueExW(key, wideName.c_str(), 0, &type, (BYTE*)(buffer.data()), &bufferSize) != ERROR_SUCCESS || type != REG_SZ)
 	{
 		return defaultValue;
 	}
@@ -400,14 +400,14 @@ Registry::Names Registry::value(const HKEY key, const std::string& name, const N
 	DWORD type = 0;
 	DWORD size = 0;
 
-	if (RegQueryValueEx(key, wideName.c_str(), 0, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_MULTI_SZ || size == 0)
+	if (RegQueryValueExW(key, wideName.c_str(), 0, &type, nullptr, &size) != ERROR_SUCCESS || type != REG_MULTI_SZ || size == 0)
 	{
 		return defaultValue;
 	}
 
 	std::vector<wchar_t> buffer(size / sizeof(wchar_t) + 2, L'\0');
 
-	if (RegQueryValueEx(key, wideName.c_str(), 0, &type, (BYTE*)(buffer.data()), &size) != ERROR_SUCCESS || type != REG_MULTI_SZ)
+	if (RegQueryValueExW(key, wideName.c_str(), 0, &type, (BYTE*)(buffer.data()), &size) != ERROR_SUCCESS || type != REG_MULTI_SZ)
 	{
 		return defaultValue;
 	}
@@ -450,7 +450,7 @@ Registry::Names Registry::values(const HKEY key)
 
 	DWORD maximalValueNameLength = 0;
 
-	if (RegQueryInfoKey(key, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &maximalValueNameLength, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
+	if (RegQueryInfoKeyW(key, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, &maximalValueNameLength, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
 	{
 		return Names();
 	}
@@ -465,7 +465,7 @@ Registry::Names Registry::values(const HKEY key)
 	{
 		DWORD valueNameSize = DWORD(valueName.size());
 
-		if (RegEnumValue(key, index, valueName.data(), &valueNameSize, 0, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
+		if (RegEnumValueW(key, index, valueName.data(), &valueNameSize, 0, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
 		{
 			break;
 		}
@@ -497,7 +497,7 @@ Registry::Names Registry::keys(const HKEY key)
 
 	DWORD maximalKeyNameLength = 0;
 
-	if (RegQueryInfoKey(key, nullptr, nullptr, nullptr, nullptr, &maximalKeyNameLength, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
+	if (RegQueryInfoKeyW(key, nullptr, nullptr, nullptr, nullptr, &maximalKeyNameLength, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
 	{
 		return Names();
 	}
@@ -512,7 +512,7 @@ Registry::Names Registry::keys(const HKEY key)
 	{
 		DWORD keyNameSize = DWORD(keyName.size());
 
-		if (RegEnumKeyEx(key, index, keyName.data(), &keyNameSize, 0, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
+		if (RegEnumKeyExW(key, index, keyName.data(), &keyNameSize, 0, nullptr, nullptr, nullptr) != ERROR_SUCCESS)
 		{
 			break;
 		}
