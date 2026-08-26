@@ -135,6 +135,9 @@ class OCEAN_PLATFORM_WIN_EXPORT PopupMenu
 		/// The handle of this menu.
 		HMENU handle_ = nullptr;
 
+		/// True, if this object owns the menu handle; False, if the parent menu owns it.
+		bool ownsHandle_ = true;
+
 		/// The sub-menus of this menu.
 		PopupMenus subMenus_;
 };

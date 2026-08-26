@@ -6,7 +6,6 @@
  */
 
 #include "ocean/platform/win/PopupMenu.h"
-
 #include "ocean/platform/win/Mouse.h"
 
 namespace Ocean
@@ -30,7 +29,7 @@ PopupMenu::~PopupMenu()
 
 size_t PopupMenu::size() const
 {
-	ocean_assert(handle_);
+	ocean_assert(handle_ != nullptr);
 
 	const int number = GetMenuItemCount(handle_);
 
@@ -45,7 +44,7 @@ size_t PopupMenu::size() const
 
 bool PopupMenu::addEntry(const std::wstring& text, const unsigned int id, const bool checked)
 {
-	ocean_assert(handle_);
+	ocean_assert(handle_ != nullptr);
 
 	if (checked)
 	{
@@ -59,19 +58,21 @@ bool PopupMenu::addEntry(const std::wstring& text, const unsigned int id, const 
 
 bool PopupMenu::addSeparator()
 {
-	ocean_assert(handle_);
+	ocean_assert(handle_ != nullptr);
 
 	return AppendMenuW(handle_, MF_SEPARATOR, 0, nullptr) == TRUE;
 }
 
 PopupMenu& PopupMenu::addMenu(const std::wstring& text)
 {
-	ocean_assert(handle_);
+	ocean_assert(handle_ != nullptr);
 
 	UniquePopupMenu menu = std::make_unique<PopupMenu>();
 
-	const bool result = AppendMenuW(handle_, MF_POPUP, UINT_PTR(menu->handle_), text.c_str()) == TRUE;
-	ocean_assert_and_suppress_unused(result, result);
+	const bool appendResult = AppendMenuW(handle_, MF_POPUP, UINT_PTR(menu->handle_), text.c_str()) == TRUE;
+	ocean_assert(appendResult);
+
+	menu->ownsHandle_ = !appendResult;
 
 	subMenus_.emplace_back(std::move(menu));
 
@@ -80,15 +81,15 @@ PopupMenu& PopupMenu::addMenu(const std::wstring& text)
 
 unsigned int PopupMenu::show(const int x, const int y, const HWND parent)
 {
-	ocean_assert(handle_);
-	ocean_assert(parent);
+	ocean_assert(handle_ != nullptr);
+	ocean_assert(parent != nullptr);
 
 	return (unsigned int)TrackPopupMenu(handle_, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, x, y, 0, parent, nullptr);
 }
 
 unsigned int PopupMenu::show(const HWND parent)
 {
-	ocean_assert(parent);
+	ocean_assert(parent != nullptr);
 
 	const VectorI2 cursorPosition(Mouse::screenPosition());
 	return show(cursorPosition.x(), cursorPosition.y(), parent);
@@ -96,14 +97,17 @@ unsigned int PopupMenu::show(const HWND parent)
 
 void PopupMenu::release()
 {
-	// the sub menus have to go before this menu's handle is destroyed, as they are attached to it
+	// attached sub-menus are recursively destroyed by their owning ancestor menu, while unattached sub-menus retain ownership of their handles
 	subMenus_.clear();
 
-	if (handle_)
+	if (handle_ != nullptr && ownsHandle_)
 	{
-		DestroyMenu(handle_);
-		handle_ = nullptr;
+		const BOOL result = DestroyMenu(handle_); // recursively destroys all attached sub-menus
+		ocean_assert_and_suppress_unused(result == TRUE, result);
 	}
+
+	handle_ = nullptr;
+	ownsHandle_ = false;
 }
 
 }
