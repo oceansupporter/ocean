@@ -115,6 +115,12 @@ bool TextWindow::createWindow()
 	modifyWindowStyle(windowStyle, windowX, windowY, windowWidth, windowHeight);
 
 	handle_ = CreateWindowW(L"EDIT", name_.c_str(), windowStyle, windowX, windowY, windowWidth, windowHeight, parentHandle_, nullptr, applicationInstance_, nullptr);
+
+	if (handle_ == nullptr)
+	{
+		return false;
+	}
+
 	dc_ = GetDC(handle_);
 
 	SetWindowLongPtr(handle_, GWLP_USERDATA, (LONG_PTR)this);
