@@ -332,13 +332,16 @@ void OpenGLStereoMainWindow::onToggleFullscreen()
 		mainWindowLastWidth_ = rect.right - rect.left;
 		mainWindowLastHeight_ = rect.bottom - rect.top;
 
-		unsigned int screenLeft, screenTop, screenWidth, screenHeight;
+		int screenLeft;
+		int screenTop;
+		unsigned int screenWidth;
+		unsigned int screenHeight;
 		if (Platform::Win::Screen::screen(handle(), screenLeft, screenTop, screenWidth, screenHeight) == false)
 		{
 			ocean_assert(false && "Invalid screen");
 		}
 
-		SetWindowPos(handle(), HWND_TOPMOST, int(screenLeft), int(screenTop), int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
+		SetWindowPos(handle(), HWND_TOPMOST, screenLeft, screenTop, int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
 	}
 }
 

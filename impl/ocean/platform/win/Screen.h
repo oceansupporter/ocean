@@ -89,7 +89,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Screen
 		 * @param height Screen height, in pixel
 		 * @return True, if succeeded
 		 */
-		static bool screen(const unsigned int positionX, const unsigned int positionY, unsigned int& left, unsigned int& top, unsigned int& width, unsigned int& height);
+		static bool screen(const int positionX, const int positionY, int& left, int& top, unsigned int& width, unsigned int& height);
 
 		/**
 		 * Returns the position and dimension of the screen most suitable for a given window handle.
@@ -100,7 +100,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Screen
 		 * @param height Screen height, in pixel
 		 * @return True, if succeeded
 		 */
-		static bool screen(const HWND window, unsigned int& left, unsigned int& top, unsigned int& width, unsigned int& height);
+		static bool screen(const HWND window, int& left, int& top, unsigned int& width, unsigned int& height);
 
 		/**
 		 * Returns the current DPI value of a given device context.

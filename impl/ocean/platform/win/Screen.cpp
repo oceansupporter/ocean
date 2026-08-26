@@ -95,7 +95,7 @@ unsigned int Screen::screens()
 	return GetSystemMetrics(SM_CMONITORS);
 }
 
-bool Screen::screen(const unsigned int positionX, const unsigned int positionY, unsigned int& left, unsigned int& top, unsigned int& width, unsigned int& height)
+bool Screen::screen(const int positionX, const int positionY, int& left, int& top, unsigned int& width, unsigned int& height)
 {
 	MONITORINFO info;
 	info.cbSize = sizeof(MONITORINFO);
@@ -106,14 +106,15 @@ bool Screen::screen(const unsigned int positionX, const unsigned int positionY, 
 		return false;
 	}
 
-	left = info.rcMonitor.left;
-	top = info.rcMonitor.top;
-	width = info.rcMonitor.right - info.rcMonitor.left;
-	height = info.rcMonitor.bottom - info.rcMonitor.top;
+	left = int(info.rcMonitor.left);
+	top = int(info.rcMonitor.top);
+	width = (unsigned int)(info.rcMonitor.right - info.rcMonitor.left);
+	height = (unsigned int)(info.rcMonitor.bottom - info.rcMonitor.top);
+
 	return true;
 }
 
-bool Screen::screen(const HWND window, unsigned int& left, unsigned int& top, unsigned int& width, unsigned int& height)
+bool Screen::screen(const HWND window, int& left, int& top, unsigned int& width, unsigned int& height)
 {
 	MONITORINFO info;
 	info.cbSize = sizeof(MONITORINFO);
@@ -123,10 +124,11 @@ bool Screen::screen(const HWND window, unsigned int& left, unsigned int& top, un
 		return false;
 	}
 
-	left = info.rcMonitor.left;
-	top = info.rcMonitor.top;
-	width = info.rcMonitor.right - info.rcMonitor.left;
-	height = info.rcMonitor.bottom - info.rcMonitor.top;
+	left = int(info.rcMonitor.left);
+	top = int(info.rcMonitor.top);
+	width = (unsigned int)(info.rcMonitor.right - info.rcMonitor.left);
+	height = (unsigned int)(info.rcMonitor.bottom - info.rcMonitor.top);
+
 	return true;
 }
 

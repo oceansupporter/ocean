@@ -255,13 +255,16 @@ void VideoInpaintingMainWindow::onToggleFullscreen()
 		// remove main window border
 		nonFullScreenStyle_ = int(SetWindowLongPtr(handle(), GWL_STYLE, WS_VISIBLE));
 
-		unsigned int screenLeft, screenTop, screenWidth, screenHeight;
+		int screenLeft;
+		int screenTop;
+		unsigned int screenWidth;
+		unsigned int screenHeight;
 		if (!Platform::Win::Screen::screen(handle(), screenLeft, screenTop, screenWidth, screenHeight))
 		{
 			ocean_assert(false && "Invalid screen");
 		}
 
-		::SetWindowPos(handle(), HWND_TOPMOST, int(screenLeft), int(screenTop), int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
+		::SetWindowPos(handle(), HWND_TOPMOST, screenLeft, screenTop, int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
 	}
 }
 

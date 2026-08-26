@@ -427,13 +427,16 @@ void MainWindow::onToggleFullscreen()
 		// hide menu bar
 		nenuBar_.ShowPane(false, true, true);
 
-		unsigned int screenLeft, screenTop, screenWidth, screenHeight;
+		int screenLeft;
+		int screenTop;
+		unsigned int screenWidth;
+		unsigned int screenHeight;
 		if (Ocean::Platform::Win::Screen::screen(m_hWnd, screenLeft, screenTop, screenWidth, screenHeight) == false)
 		{
 			ocean_assert(false && "Invalid screen");
 		}
 
-		::SetWindowPos(m_hWnd, HWND_TOPMOST, int(screenLeft), int(screenTop), int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
+		::SetWindowPos(m_hWnd, HWND_TOPMOST, screenLeft, screenTop, int(screenWidth), int(screenHeight), SWP_SHOWWINDOW);
 
 		if (configurationApplied_)
 		{
