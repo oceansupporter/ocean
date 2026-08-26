@@ -166,6 +166,16 @@ bool Registry::setValue(const HKEY key, const std::string& name, const long long
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const std::string& value)
 {
+	return setValue(root, path, name, String::toWString(value));
+}
+
+bool Registry::setValue(const HKEY key, const std::string& name, const std::string& value)
+{
+	return setValue(key, name, String::toWString(value));
+}
+
+bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const std::wstring& value)
+{
 	const HKEY key = openKey(root, path);
 
 	const bool result = setValue(key, name, value);
@@ -174,14 +184,14 @@ bool Registry::setValue(const RootType root, const std::string& path, const std:
 	return result;
 }
 
-bool Registry::setValue(const HKEY key, const std::string& name, const std::string& value)
+bool Registry::setValue(const HKEY key, const std::string& name, const std::wstring& value)
 {
 	if (key == nullptr || name.empty())
 	{
 		return false;
 	}
 
-	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_SZ, (BYTE*)String::toWString(value).c_str(), DWORD((value.length() + 1) << 1)) == ERROR_SUCCESS;
+	return RegSetValueEx(key, String::toWString(name).c_str(), 0, REG_SZ, (const BYTE*)(value.c_str()), DWORD(sizeof(wchar_t) * (value.length() + 1))) == ERROR_SUCCESS;
 }
 
 bool Registry::setValue(const RootType root, const std::string& path, const std::string& name, const Names& value)

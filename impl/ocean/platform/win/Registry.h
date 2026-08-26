@@ -181,6 +181,25 @@ class OCEAN_PLATFORM_WIN_EXPORT Registry
 		 * @param value Value to set
 		 * @return True, if succeeded
 		 */
+		static bool setValue(const RootType root, const std::string& path, const std::string& name, const std::wstring& value);
+
+		/**
+		 * Sets a value of a key.
+		 * @param key Base registry key
+		 * @param name The name of the value to set
+		 * @param value Value to set
+		 * @return True, if succeeded
+		 */
+		static bool setValue(const HKEY key, const std::string& name, const std::wstring& value);
+
+		/**
+		 * Sets a value of a key.
+		 * @param root Key root
+		 * @param path Path and name of the key to set the value for
+		 * @param name The name of the value to set
+		 * @param value Value to set
+		 * @return True, if succeeded
+		 */
 		static bool setValue(const RootType root, const std::string& path, const std::string& name, const Names& value);
 
 		/**
