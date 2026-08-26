@@ -21,34 +21,35 @@ namespace Win
 
 bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 {
-	ocean_assert(handle);
+	ocean_assert(handle != nullptr);
 	if (handle == nullptr)
 	{
 		return false;
 	}
 
-	HWND hwndTip = CreateWindowEx(0, TOOLTIPS_CLASS, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, GetParent(handle), nullptr, GetModuleHandle(nullptr), nullptr);
+	const HWND hwndTip = CreateWindowExW(0, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+										GetParent(handle), nullptr, GetModuleHandleW(nullptr), nullptr);
 
-	ocean_assert(hwndTip);
+	ocean_assert(hwndTip != nullptr);
 	if (hwndTip == nullptr)
 	{
 		return false;
 	}
 
-	TOOLINFO toolInfo = {0};
-	toolInfo.cbSize = TTTOOLINFOA_V1_SIZE;
+	TOOLINFOW toolInfo = {0};
+	toolInfo.cbSize = TTTOOLINFOW_V1_SIZE;
 	toolInfo.hwnd = GetParent(handle);
 	toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-	toolInfo.uId = (UINT_PTR)handle;
-	toolInfo.lpszText = (LPWSTR)text.c_str();
+	toolInfo.uId = UINT_PTR(handle);
+	toolInfo.lpszText = const_cast<wchar_t*>(text.c_str());
 
-	if (SendMessage(hwndTip, TTM_ACTIVATE, TRUE, 0))
+	if (SendMessageW(hwndTip, TTM_ACTIVATE, TRUE, 0))
 	{
 		ocean_assert(false && "This should never happen!");
 		return false;
 	}
 
-	if (!SendMessage(hwndTip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo))
+	if (!SendMessageW(hwndTip, TTM_ADDTOOLW, 0, LPARAM(&toolInfo)))
 	{
 		ocean_assert(false && "This should never happen!");
 		return false;
@@ -57,11 +58,11 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 	// check whether we have a multiline tool tip
 	if (text.find(L'\n') != std::string::npos)
 	{
-		HFONT fontHandle = (HFONT)SendMessage((HWND)hwndTip, WM_GETFONT, 0, (LPARAM)0);
+		HFONT fontHandle = HFONT(SendMessageW(hwndTip, WM_GETFONT, 0, 0));
 
 		if (!fontHandle)
 		{
-			fontHandle = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+			fontHandle = HFONT(GetStockObject(DEFAULT_GUI_FONT));
 			if (!fontHandle)
 			{
 				ocean_assert(false && "This should never happen!");
@@ -94,7 +95,7 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 			std::wstring line = text.substr(start, end == std::string::npos ? end : end - start);
 
 			SIZE sz;
-			if (!GetTextExtentPoint32(*hdc, line.c_str(), int(line.length()), &sz))
+			if (!GetTextExtentPoint32W(*hdc, line.c_str(), int(line.length()), &sz))
 			{
 				ocean_assert(false && "This should never happen!");
 			}
@@ -112,9 +113,9 @@ bool ToolTip::addToolTip(const HWND handle, const std::wstring& text)
 			start = end + 1;
 		}
 
-		if (max > SendMessage(hwndTip, TTM_GETMAXTIPWIDTH, 0, 0))
+		if (max > SendMessageW(hwndTip, TTM_GETMAXTIPWIDTH, 0, 0))
 		{
-			SendMessage(hwndTip, TTM_SETMAXTIPWIDTH, 0, max);
+			SendMessageW(hwndTip, TTM_SETMAXTIPWIDTH, 0, max);
 		}
 	}
 
