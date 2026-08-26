@@ -252,7 +252,6 @@ FrameType::PixelFormat Bitmap::internalPixelFormat(const FrameType::PixelFormat 
 
 		case FrameType::FORMAT_BGR24:
 		case FrameType::FORMAT_BGRA32:
-		case FrameType::FORMAT_RGBA32:
 		case FrameType::FORMAT_BGR4444:
 		case FrameType::FORMAT_BGR5551:
 		case FrameType::FORMAT_BGR565:
@@ -261,8 +260,11 @@ FrameType::PixelFormat Bitmap::internalPixelFormat(const FrameType::PixelFormat 
 		case FrameType::FORMAT_RGB5551:
 		case FrameType::FORMAT_RGB565:
 		case FrameType::FORMAT_RGBA4444:
-		case FrameType::genericPixelFormat<uint8_t, 4u>():
 			return pixelFormat;
+
+		case FrameType::FORMAT_RGBA32:
+		case FrameType::genericPixelFormat<uint8_t, 4u>():
+			return FrameType::FORMAT_RGBA32;
 
 		default:
 			break;
