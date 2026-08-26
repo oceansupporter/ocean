@@ -1,11 +1,15 @@
 # Style Guide
 
-Last change: 2017-05-30
+Last change: 2026-08-26
 
 Author(s): Jan Herling, Nils Plath
 
 The following sections define the C++ style guide for the Ocean framework. Though these rules are
 written for C++, they can and should be adapted to other languages as well.
+
+Ocean uses C++20. New code should use the corresponding language and standard-library facilities
+when they make interfaces safer or implementations clearer. Code that is restricted by a platform
+API or third-party dependency may use an older style locally when necessary.
 
 ## Documentation
 
@@ -21,6 +25,36 @@ parameters (especially in cases when the range of valid values is only a subrang
 all possible values). Since the original author of a function may no longer be available, a detailed
 and correct documentation of these ranges of values is an absolute imperative in order to avoid
 errors or crashes of programs.
+
+Documentation in header files uses Doxygen comments. Use `@param` for parameters, `@return` for
+return values, and `@see` for relevant related interfaces. Parameter, return-value, and variable
+documentation must specify valid value ranges whenever a meaningful range exists. Use unambiguous
+interval notation such as `[0, 255]`, `[0, infinity)`, or `(0, infinity)`, and document special or
+sentinel values separately. This is especially important for mathematical functions, as
+demonstrated throughout `Numeric.h`. Documentation must also state whether pointers may be
+`nullptr` and describe ownership and lifetime requirements where applicable. Avoid repeating
+information already made obvious by the declaration.
+
+Documented parameter ranges and other preconditions must be checked where practical. Use
+`ocean_assert` when a violation represents an internal programming error and an assertion is
+suitable. Use an `if` statement, followed by the documented error handling, when invalid input can
+come from a caller, user, file, device, network, or other runtime source, or when the program must
+remain correct in release builds. Assertions may supplement such runtime checks but must not replace
+them.
+
+**Example**
+
+```cpp
+/**
+ * Calculates the normalized value.
+ * @param value The value to normalize, with range [0, infinity)
+ * @return The normalized value, with range [0, 1]
+ */
+double normalizeValue(const double value);
+
+/// Number of completed iterations, with range [0, maximalIterations_].
+unsigned int completedIterations_;
+```
 
 Classes and functions which are hard to document even for its author are a possible sign of bad code
 design and implementation, e.g. because the code is hard to use or because of a complex structure of
@@ -125,6 +159,9 @@ int b = -5; // Unary operators, no space
 bool v = !a;
 ```
 
+Spaces may be used for alignment inside documentation and other non-code text. Do not use repeated
+spaces to align declarations or expressions; such alignment is fragile when names or types change.
+
 ### Lines of code
 
 Only write a single expression per line. A semicolon, which denotes the end of an expression, also
@@ -136,17 +173,16 @@ The resolution of modern computer displays is high enough to display far more th
 per line. Because of that, expressions should be written into a single line rather than breaking
 them into multiple lines. If expressions are split into multiple lines they could appear as separate
 calls or expressions which may decrease the readability and cause misunderstandings. Lines of code
-*exceeding the length of 160 characters* may be split into multiple lines in order to avoid the need
+*exceeding the length of 160 characters* should normally be split into multiple lines in order to avoid the need
 to scroll horizontally. Use at least one additional level of indentation at the beginning of the
 following lines to hint that the block of lines are related to the previous ones. Lines should be
 split *before* binary operators. Writing the operator at the beginning of the next line also implies
 that the current line belongs to the previous one. Conversely, it is easy to miss operators at the
 end of a line.
 
-Long lines containing non-critical code, e.g. the definition of functions with only trivial
-parameters, do not have to be split despite the limit mentioned above. Many code editors support
-automatic line wrapping, which can be configured by each developer individually without affecting
-the preference of other developers.
+Long declarations whose parameters are straightforward may remain on one line when splitting them
+would reduce readability. The 160-character limit is therefore a strong preference rather than an
+absolute rule. Do not rely on automatic line wrapping when choosing a readable layout.
 
 **Example**
 
@@ -161,9 +197,10 @@ if (true)
 
 ### Comparison operators
 
-If a class implements an equality operator (`operator==(...)`) a corresponding inequality operator
-(`operator!=(...)`) must also be implemented. This avoids undesired side-effects, i.e. the implicit
-creation of the inequality operator by the compiler using a cast operator.
+For code that relies on C++20 comparison rewriting, define `operator==` and allow the compiler to
+rewrite inequality expressions when that produces the intended semantics. Define `operator!=`
+explicitly only when compatibility or different semantics require it. Comparison operators must be
+consistent with each other and should normally be marked `const` and `noexcept` when applicable.
 
 **Example**
 
@@ -196,9 +233,10 @@ use cases should be an exception. Avoid nesting of ternary operators.
 
 ### Macros
 
-The use of macros should be an exception (an exception of this exception are third party libraries
-which rely on the existence of certain macros or which help with its integration). Macros cannot be
-debugged, which is the main reason to refrain from using them.
+The use of macros should be an exception. Prefer constants, inline or `constexpr` functions,
+templates, aliases, and language features because macros do not obey C++ scope or type rules and
+are harder to inspect while debugging. Platform selection, export declarations, assertions, and
+integration with third-party libraries are common justified uses.
 
 ### Code blocks
 
@@ -249,22 +287,40 @@ double startTimestamp = 0.0;
 std::string currentImageFilename = std::string("image.bmp");
 ```
 
+Non-static member variables have a trailing underscore, e.g. `startTimestamp_`. This makes member
+access recognizable without prefixes such as `m_` or explicit `this->` qualification. Static data
+members follow the same naming rule unless an established API requires otherwise.
+
+### Type deduction with `auto`
+
+Do not use the `auto` keyword for variable declarations. An explicit type lets a reader understand
+a variable's representation and behavior immediately, without having to inspect the initializer or
+deduce the return type of another function. Although `auto` can be convenient while writing code,
+it makes code review, maintenance, and debugging more difficult.
+
+Use `auto` only when it is absolutely necessary or when spelling the type is not reasonably
+possible, for example for an unnamed type produced by the language. Convenience, a long type name,
+or avoiding an update after a return type changes is not sufficient justification. Prefer a named
+type alias when an explicit type would otherwise be unwieldy.
+
 If a data type exists as signed as well as unsigned, then choose the one that is more suitable for
 the specific situation. For example, using `unsigned int` to describe the width and height of
 regular 2D images (assuming negative dimensions don't have a logical meaning), this choice of the
 data type already eliminates one possible source of errors, i.e. negative values.
 
-Except for a few special cases, applications or libraries do not use global variables. The use of
-global variables indicate problems in the structure of the code. Instead make us of singletons to
-replace global variables. This also avoids implicit dependencies or missing definition of global
-variables.
+Except for a few special cases, applications and libraries must not use mutable global variables.
+Prefer explicit ownership and dependency injection. A singleton is appropriate only when the
+process-wide lifetime and uniqueness are inherent to the abstraction; it must not be used merely to
+hide global state. Namespace-scope constants are allowed when they have internal linkage or are
+defined as inline constants.
 
 ### Constness
 
-Make sure to add the keyword `const` to the definition of a variable, if its values doesn't change
-anymore during its lifetime. If variables are declared as constant, compilers may be able to apply
-optimization to improve the overall performance. It also helps other developers to understand the
-code as they don't have to watch out for places where the value of a variable may or may not change.
+Make sure to add the keyword `const` to the definition of a variable if its value does not change
+during its lifetime. Constness documents intent and lets the compiler prevent accidental
+modification. It helps other developers understand code because they do not have to search for
+places where the value may change. Compiler optimization is not the primary reason to declare a
+value `const`.
 
 Memory that cannot be changed, i.e. constant memory, must be defined as `const` and must be also be
 passed as `const` in function calls.
@@ -280,10 +336,10 @@ const unsigned char* const constantPointerWithConstantData = ...;
 
 ### References
 
-References should be preferred over pointers. For example, if the return value of a function is a
-pointer it isn't clear who owns the memory, i.e. who is responsible to release the memory after use.
-When using references as return value the question of ownership doesn't even arise because it is
-clear for the caller that it isn't his responsibility.
+References should be preferred for required, non-null objects that are not transferred to the
+callee. Use pointers for optional objects or where reseating is required. Neither a raw pointer nor
+a reference expresses ownership or guarantees lifetime; document both when they are not obvious.
+Use an appropriate owning type when ownership is transferred or shared.
 
 In declarations of references the symbol `&` is appended to the right side of the data type, without
 any space. This avoids accidental confusion with the bitwise and-operator (`&`).
@@ -295,20 +351,19 @@ const std::string& stringReference = ...;
 bool& valueReference = ...;
 ```
 
-### Pointer
+### Pointers
 
-For the initialization, assignment, or comparison of pointers with the default pointer address `0`
-always use the statement `NULL`. This avoids confusion with *counter* variables. Conversely, the
-statement `NULL` must not be used with non-pointer variables.
+Use `nullptr` for the initialization, assignment, and comparison of null pointers. Do not use `0`
+or `NULL` as a null pointer constant in new code.
 
-In declarations of pointers the symbol `*` is appended to the right side of the data, without any
-space. This avoid accidental confusion with the multiplication operator (`*`).
+In declarations of pointers the symbol `*` is appended to the right side of the data type, without
+any space. This avoids accidental confusion with the multiplication operator (`*`).
 
 **Example**
 
 ```cpp
 const std::string* stringPointer = ...;
-bool* value = NULL;
+bool* value = nullptr;
 ```
 
 The *address-of* operator (`&`) and dereferencing operator (`*`) are prepended to the variable in
@@ -321,21 +376,21 @@ std::string* stringPointer = &stringObject;
 std::string stringObject2 = *stringPointer;
 ```
 
-### Suffices
+### Suffixes
 
 Numeric literals must always be accompanied by their corresponding suffices. Failing to add the type
 suffix may results in compiler warnings, lower performance, or even overflows.
 
 | Data type          | Suffix | Example                                  |
 |--------------------|-------:|------------------------------------------|
-| long               |    `l` | `long v = 17;`                           |
+| long               |    `l` | `long v = 17l;`                          |
 | unsigned int       |    `u` | `unsigned int v = 5u;`                   |
 | unsigned long long |  `ull` | `unsigned long long v = 7ull;`           |
 | float              |    `f` | `float v = 6.3f;`                        |
 
 ## <a name="functions"></a> Functions
 
-Similar to the [naming convention of variables](variables), names of functions begin with a lower
+Similar to the [naming convention of variables](#variables), names of functions begin with a lower
 case letter. If the name consists of compound words, use the camel case convention.
 
 The name of a function must be unambiguous and indicate what the function is intended to do. The use
@@ -360,10 +415,31 @@ static functions, which are globally accessible as well. Classes with only (publ
 is practically equivalent to a namespace, but avoid the creation of artificial hierarchies of
 namespaces.
 
-In the case of inline functions, use the statement `inline` in the declaration of the function as
-well as in its definition. This helps to avoid confusion and linker errors. Note that functions can
-never be made `virtual` and `inline` at the same time because the two statements are mutually
-exclusive.
+Use `inline` where a function definition in a header requires it to satisfy the one-definition
+rule. A function defined inside a class definition is implicitly inline and does not need the
+keyword. Do not use `inline` merely as an optimization request; the compiler decides whether to
+inline a call. A function may be both `virtual` and `inline`, although virtual functions are usually
+defined out of line unless their implementation is trivial.
+
+When several declaration specifiers are used, place the more important semantic information before
+`inline`. In particular, always write `static inline` rather than `inline static`. Whether a
+function belongs to the class instead of an object instance is more important to the reader than
+whether its definition is inline.
+
+**Example**
+
+```cpp
+static inline void function();
+```
+
+Mark every overriding virtual function with `override`, including overriding destructors. Use
+`final` when further overriding or inheritance is intentionally prohibited. Do not repeat
+`virtual` on a declaration that already uses `override` or `final`.
+
+Use `constexpr` for values and functions that are intended to be usable in constant expressions.
+Use `noexcept` when a function is guaranteed not to throw and that guarantee is part of its
+interface. Apply attributes such as `[[nodiscard]]` where ignoring a result is likely to be an
+error, not merely to every function that returns a value.
 
 With the exception of constructors (which may not need to do anything) and virtual functions that
 have no logical meaning in a certain implementations, avoid empty functions bodies. In order to make
@@ -388,6 +464,19 @@ void ExampleClass::virtualFunctionWithoutImplementation()
 }
 ```
 
+### Lambda functions
+
+Lambda functions are not preferred. Their anonymous nature makes behavior harder to discover,
+reuse, test, and document, and non-trivial captures can obscure dependencies and lifetimes. Prefer a
+named function, a private static member function, or a small named function object whose contract
+can be documented in the corresponding header file.
+
+A lambda may be used when an API requires a callable and the operation is short, local, and
+self-explanatory. Keep the capture list explicit and minimal; do not use default captures such as
+`[&]` or `[=]`. A lambda must not contain complex control flow or implement behavior that deserves
+independent documentation. If explaining the lambda requires more than a short source comment,
+replace it with a named and documented function or type.
+
 ## Include files
 
 Every library must define a common or base include file, which has to be included in all other
@@ -396,26 +485,26 @@ library.
 
 In general, all included header files from the same namespace or the same third party must be
 blocked together and each block must be sorted alphabetically, which helps to quickly get an
-overview of all dependencies and identify and avoid duplicate include statements. Blocks include
+overview of all dependencies and identify and avoid duplicate include statements. Blocks of include
 statements are separated by an empty line. First include header files from the current namespace,
 then those of other namespaces of the Ocean framework. After that, include header files of third
 party libraries. Use quotation marks (`#include "..."`) for include files of the Ocean framework and
-use angle brackets for all others (`#include <...>"`).
+use angle brackets for all others (`#include <...>`).
 
 **Example**
 
 ```cpp
-#include “ocean/rendering/advanced/AdvancedRendering.h”
-#include “ocean/rendering/advanced/AdvancedObject.h”
+#include "ocean/rendering/advanced/AdvancedObject.h"
+#include "ocean/rendering/advanced/AdvancedRendering.h"
 
-#include “ocean/base/String.h”
-#include “ocean/base/Thread.h”
+#include "ocean/base/String.h"
+#include "ocean/base/Thread.h"
 
-#include “ocean/cv/FrameConverter.h”
+#include "ocean/cv/FrameConverter.h"
 
-#include “ocean/media/Movie.h”
+#include "ocean/media/Movie.h"
 
-#include “ocean/rendering/Object.h”
+#include "ocean/rendering/Object.h"
 
 #include <vector>
 
@@ -440,7 +529,7 @@ incorrect libraries.
 ## <a name="namespaces"></a> Namespaces
 
 Namespaces contain sets of classes, which share a certain logical relationship. The use of
-namespaces helps to avoid duplicate or ambiguous function names, variables, classes or `typedefs`.
+namespaces helps to avoid duplicate or ambiguous function names, variables, classes, or type aliases.
 Except for rare occasions, each library must define its own namespace. The name of the library must
 match that of the corresponding namespace. Each library must define a unique namespace and every
 code file contains exactly one namespace or one hierarchy of namespaces.
@@ -468,6 +557,20 @@ class Classname;
 
 template <unsigned int tSize, unsigned char tValue>
 void function();
+```
+
+## Type aliases
+
+Use alias declarations (`using Name = Type`) instead of `typedef` in new code. Alias declarations
+are easier to read and support alias templates.
+
+**Example**
+
+```cpp
+using ObjectIds = std::vector<unsigned int>;
+
+template <typename T>
+using Objects = std::vector<T>;
 ```
 
 ## Enums
@@ -508,32 +611,38 @@ with defines from third party libraries.
 
 ## Asserts
 
-Assertions define an expectation which must be true. Usually `assert` statements are only evaluated
-in debug builds (except if the macro `NDEBUG` is defined on Windows) and have no affect on release
-builds. Assertions help to detect and avoid programming errors of the developer. They cannot,
-however, avoid incorrect use of code. Because of that, `assert` should be used generously and
+Assertions define an expectation which must be true. Use Ocean's `ocean_assert` for runtime
+development assertions. These assertions are normally evaluated only in debug builds and have no
+effect in release builds. Assertions help to detect and avoid programming errors. They cannot,
+however, avoid incorrect use of code. Because of that, `ocean_assert` should be used generously and
 frequently, e.g. to check if the values of variables is in the expected range of values and allow
 the developer to react accordingly and as early as possible.
 
-Even if an `assert` isn't a valid substitute for an `if`-`else`-clause to check the validity of a
-variable, it may be preferable to use `assert` in certain performance critical parts of code.
+Even though `ocean_assert` is not a substitute for an `if`-`else` clause that handles invalid input,
+it may be preferable in performance-critical internal code where violating the condition indicates
+a programming error.
 
 As a general rule of thumb (here, the terms *developer* and *user* are used interchangeably):
 
 * public interface: if a user passes a variable into a program, use an `if`-clause to check for its
   correctness, e.g. to check if the value is inside the valid range of values, because invalid
   values are an example of incorrect use of a program and not a logical programming error
-  (`assert`). This ensures that only valid values are passed into the program.
+  (`ocean_assert`). This ensures that only valid values are passed into the program.
 
-* private interface: for code that is not directly accessible by users, employ `assert` to check the
-  correctness of parameters, i.e. the top of a function should list as many `assert` statements as
-  the function has parameters with a limited range of values. Additional `if`-clauses may be added
+* private interface: for code that is not directly accessible by users, employ `ocean_assert` to
+  check parameters with restricted ranges. Additional `if` clauses may be added
   to handle incorrect values gracefully, in case the developer sees fit. This assessment should be
   based on how performance critical the function is and on the expected computational impact of such
   `if`-clause.
 
-Independent of the use of `if`-clauses versus `assert`, the documentation must clearly state valid
+Independent of the use of `if` clauses versus `ocean_assert`, the documentation must clearly state valid
 ranges of values of its parameters as well as common sources of errors.
+
+Every documented parameter range or precondition should have a corresponding check unless the type
+system already enforces it or checking it would be impossible or disproportionately expensive. If a
+check is deliberately omitted, the reason should be clear from the implementation or documented
+contract. Checks must agree exactly with the documented interval, including whether each boundary
+is inclusive or exclusive.
 
 **Example**
 
@@ -548,17 +657,36 @@ void mouseMove(const unsigned int x, const unsigned int y)
 
 void timeCriticalFunction(const unsigned int value)
 {
-    assert(value != 0u);
+    ocean_assert(value != 0u);
     unsigned int intermediate = 128u / value;
 
     // ...
 }
 ```
 
-If the value of a variable can be already computed at compile time, which often the case for
-template implementation, the correctness must be evaluated with `static_assert()`. Since this
-statement was not supported by all compilers at the time of writing of the initial version of this
-document, the preprocessor macro `OCEAN_STATIC_ASSERT()` can be used, too.
+If a condition can be evaluated at compile time, as is often the case in template implementations,
+its correctness must be evaluated with `static_assert`. Use `ocean_assert` only for conditions that
+depend on runtime state.
+
+### Suppressing unused-variable warnings
+
+In a release build, the expression passed to `ocean_assert` is not evaluated. A local variable or
+parameter that is used only by that expression may therefore produce an unused-variable warning.
+Use `ocean_assert_and_suppress_unused(expression, variable)` in this specific situation. In a debug
+build it behaves like `ocean_assert(expression)`; in a release build it does not evaluate the
+expression and instead marks `variable` as used.
+
+**Example**
+
+```cpp
+const int result = initializeObject();
+ocean_assert_and_suppress_unused(result == 9, result);
+```
+
+The second argument must be the variable that would otherwise be unused in a release build. When a
+variable is also used by release code, use an ordinary `ocean_assert`. Do not use this macro to hide
+an unrelated compiler warning or when the expression has required side effects, because assertion
+expressions must never be required for program correctness.
 
 ## Classes
 
@@ -592,8 +720,9 @@ declarations of static functions follow after the declaration of the overloaded 
 A block structure of class declarations like the one described above makes it easy for developers to
 get familiar with classes that were written by other developers.
 
-In order to reduce algorithmic complexity and to improve the performance of the code, member
-functions which do not access or alter the state of a class instance must be declared as `static`.
+Member functions that do not access an object instance should normally be declared `static`. This
+expresses that they do not depend on object state; it does not by itself reduce algorithmic
+complexity.
 
 Friendship declarations (`friend`) don't affect class inheritance and can be safely written at the
 very top of the declaration, which avoids missing these declarations and improves the overall
@@ -610,11 +739,11 @@ class Classname
 
     public:
 
-        typedef int PublicIntDefinition;
+        using PublicIntDefinition = int;
 
     protected:
 
-        typedef int ProtectedIntDefinition;
+        using ProtectedIntDefinition = int;
 
 
     /// Second, the block of functions (with order: public, protected, private):
@@ -728,9 +857,11 @@ The entire code base must be in compliance with the [C++ standard][cpp_01]. The 
 that violates this rule may vary on different platforms and compilers may be unable to translate
 that code.
 
-For that reason, avoid the use of pre-compiled headers and preprocessor directives such as `#pragma
-once` or `#pragma comment(lib, ...)`. Because equivalent alternatives exist for these directives,
-those should be preferred.
+Use conventional include guards in header files instead of `#pragma once`. Do not use
+`#pragma comment(lib, ...)`; library dependencies belong in the build configuration. Other
+implementation-specific directives must be isolated behind appropriate compiler or platform
+checks. Precompiled headers may be used by the build system but must not be required for a source
+file to compile correctly.
 
 In case non-compliant C++ code *has to be* added, make sure it is surrounded by preprocessor
 directives (`#if defined ...`) adapted to the specific platform/compiler/CPU/etc.
@@ -748,15 +879,12 @@ incorrect results. As a consequence, it is an imperative to take these warnings 
 correct the code correspondingly. Only then it is allowed to commit the changed code fragments to
 the VCS.
 
-From the perspective of a compiler, the code may be regarded as *correct*, if the entire code base
-builds without errors or warnings for all possible build types, platforms, and processor
-architecture. Because an exhaustive check of all possible build configurations may not be feasible,
-the minimum configuration that *must be* tested before the code may be committed to the VCS is
-currently defined as follows:
+From the perspective of a compiler, code may be regarded as *correct* only when it builds without
+errors or warnings in the supported configurations affected by the change. Before committing, test
+the relevant debug and release configurations and the supported platforms and architectures that
+are locally available. Continuous integration must cover the remaining required configurations.
 
-* 32- and 64-bit CPU architectures, with
-* dynamically and statically linked Ocean libraries, and
-* release and debug configurations.
-
-For an official release of the framework, *all* possible configurations have to be tested and
-validated before the release. Additionally, all unit and performance tests have to pass.
+For an official release of the framework, all configurations in the current release matrix must be
+tested and validated. Additionally, all unit tests must pass; relevant performance tests must be
+run and investigated for regressions. The release matrix belongs in the build or release
+documentation rather than in this style guide because supported targets change over time.
