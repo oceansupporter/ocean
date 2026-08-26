@@ -14,8 +14,6 @@
 #include "ocean/base/Frame.h"
 #include "ocean/base/Singleton.h"
 
-#include <vector>
-
 namespace Ocean
 {
 
@@ -36,7 +34,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Resource
 		/**
 		 * Definition of a vector holding 8 bit values.
 		 */
-		using Buffer = std::vector<unsigned char>;
+		using Buffer = std::vector<uint8_t>;
 
 	public:
 
@@ -48,7 +46,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Resource
 		 * @param buffer The resulting resource information
 		 * @return True, if succeeded
 		 */
-		static bool extractResource(const HMODULE module, const unsigned int resourceId, const std::wstring& type, Buffer& buffer);
+		static bool extractResource(const HMODULE module, const uint32_t resourceId, const std::wstring& type, Buffer& buffer);
 };
 
 /**
@@ -64,7 +62,7 @@ class OCEAN_PLATFORM_WIN_EXPORT ResourceManager : public Singleton<ResourceManag
 		/**
 		 * Definition of a map mapping resource ids to frames.
 		 */
-		using FrameMap = std::map<unsigned int, FrameRef>;
+		using FrameMap = std::map<uint32_t, FrameRef>;
 
 	public:
 
@@ -74,7 +72,7 @@ class OCEAN_PLATFORM_WIN_EXPORT ResourceManager : public Singleton<ResourceManag
 		 * @param type The type of the frame, e.g., PNG, BMP, etc.
 		 * @return The resource frame, if any
 		 */
-		FrameRef frame(const unsigned int resourceId, const std::wstring& type);
+		FrameRef frame(const uint32_t resourceId, const std::wstring& type);
 
 		/**
 		 * Returns a specific resource frame from a specified module.
@@ -83,7 +81,7 @@ class OCEAN_PLATFORM_WIN_EXPORT ResourceManager : public Singleton<ResourceManag
 		 * @param module The handle of the module from which the resource is requested, nullptr to extract the resource from the module which created the current process
 		 * @return The resource frame, if any
 		 */
-		FrameRef frame(const unsigned int resourceId, const std::wstring& type, const HMODULE module);
+		FrameRef frame(const uint32_t resourceId, const std::wstring& type, const HMODULE module);
 
 		/**
 		 * Releases the entire resources of this manager.

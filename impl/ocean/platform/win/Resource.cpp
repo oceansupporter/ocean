@@ -20,7 +20,7 @@ namespace Platform
 namespace Win
 {
 
-bool Resource::extractResource(const HMODULE module, const unsigned int resourceId, const std::wstring& type, Buffer& buffer)
+bool Resource::extractResource(const HMODULE module, const uint32_t resourceId, const std::wstring& type, Buffer& buffer)
 {
 	HRSRC resourceInformationHandle = FindResourceW(module, MAKEINTRESOURCEW(resourceId), type.c_str());
 
@@ -57,21 +57,21 @@ bool Resource::extractResource(const HMODULE module, const unsigned int resource
 	return true;
 }
 
-FrameRef ResourceManager::frame(const unsigned int resourceId, const std::wstring& type)
+FrameRef ResourceManager::frame(const uint32_t resourceId, const std::wstring& type)
 {
 	const ScopedHMODULE scopedModule = System::currentLibraryModule();
 
 	return frame(resourceId, type, scopedModule.object());
 }
 
-FrameRef ResourceManager::frame(const unsigned int resourceId, const std::wstring& type, const HMODULE module)
+FrameRef ResourceManager::frame(const uint32_t resourceId, const std::wstring& type, const HMODULE module)
 {
 	const ScopedLock scopedLock(lock_);
 
-	FrameMap::const_iterator i = frameMap_.find(resourceId);
-	if (i != frameMap_.end())
+	FrameMap::const_iterator iResource = frameMap_.find(resourceId);
+	if (iResource != frameMap_.end())
 	{
-		return i->second;
+		return iResource->second;
 	}
 
 	Resource::Buffer buffer;
@@ -81,16 +81,16 @@ FrameRef ResourceManager::frame(const unsigned int resourceId, const std::wstrin
 
 		if (frame.isValid())
 		{
-			i = frameMap_.insert(std::make_pair(resourceId, FrameRef(new Frame(std::move(frame))))).first;
+			iResource = frameMap_.insert(std::make_pair(resourceId, FrameRef(new Frame(std::move(frame))))).first;
 		}
 	}
 
-	if (i == frameMap_.end())
+	if (iResource == frameMap_.end())
 	{
 		return FrameRef();
 	}
 
-	return i->second;
+	return iResource->second;
 }
 
 void ResourceManager::release()
