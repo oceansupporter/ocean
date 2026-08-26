@@ -27,7 +27,7 @@ Bitmap::Bitmap(const Bitmap& bitmap) :
 	*this = bitmap;
 }
 
-Bitmap::Bitmap(Bitmap&& bitmap) :
+Bitmap::Bitmap(Bitmap&& bitmap) noexcept :
 	Bitmap()
 {
 	*this = std::move(bitmap);
@@ -167,7 +167,7 @@ bool Bitmap::isValid() const
 	return bitmapWidth_ != 0u && bitmapHeight_ != 0u && bitmapPixelFormat_ != FrameType::FORMAT_UNDEFINED && bitmapPixelOrigin_ != FrameType::ORIGIN_INVALID;
 }
 
-Bitmap& Bitmap::operator=(Bitmap&& bitmap)
+Bitmap& Bitmap::operator=(Bitmap&& bitmap) noexcept
 {
 	if (this != &bitmap)
 	{
@@ -303,7 +303,7 @@ bool Bitmap::createBitmap(const unsigned int width, const unsigned int height, c
 		return false;
 	}
 
-	bitmapHandle_ = CreateDIBSection(bitmapDC_, bitmapInfoMemory.data<BITMAPINFO>(false /*checkAlignment*/), DIB_RGB_COLORS, (void**)&bitmapData_, nullptr, 0);
+	bitmapHandle_ = CreateDIBSection(bitmapDC_, bitmapInfoMemory.data<BITMAPINFO>(false /*checkAlignment*/), DIB_RGB_COLORS, &bitmapData_, nullptr, 0);
 
 	if (bitmapHandle_ == nullptr)
 	{
@@ -320,7 +320,9 @@ bool Bitmap::createBitmap(const unsigned int width, const unsigned int height, c
 	bitmapPixelFormat_ = supportedPixelFormat;
 	bitmapPixelOrigin_ = pixelOrigin;
 
-	ocean_assert(FrameType::dataType(supportedPixelFormat) == FrameType::DT_UNSIGNED_INTEGER_8);
+	const FrameType::DataType dataType = FrameType::dataType(supportedPixelFormat);
+
+	ocean_assert(dataType == FrameType::DT_UNSIGNED_INTEGER_8 || dataType == FrameType::DT_UNSIGNED_INTEGER_16);
 	ocean_assert(FrameType::numberPlanes(supportedPixelFormat) == 1u);
 
 	unsigned int planeWidth;
@@ -334,11 +336,15 @@ bool Bitmap::createBitmap(const unsigned int width, const unsigned int height, c
 		return false;
 	}
 
-	const unsigned int bitmapWidthElements = planeWidth * planeChannels; // each element is also a byte
+	const unsigned int bytesPerElement = FrameType::bytesPerDataType(dataType);
+	ocean_assert(bytesPerElement == 1u || bytesPerElement == 2u);
 
-	bitmapPaddingElements_ = (4u - (bitmapWidthElements % 4u)) % 4u; // Windows bitmaps are 4 byte aligned
+	const unsigned int bitmapWidthElements = planeWidth * planeChannels;
+	const unsigned int bitmapWidthBytes = bitmapWidthElements * bytesPerElement;
 
-	bitmapStrideElements_ = bitmapWidthElements + bitmapPaddingElements_;
+	bitmapPaddingElements_ = (4u - (bitmapWidthBytes % 4u)) % 4u; // Windows bitmaps are 4 byte aligned
+
+	bitmapStrideElements_ = bitmapWidthBytes + bitmapPaddingElements_;
 	ocean_assert(bitmapStrideElements_ % 4u == 0u);
 
 	bitmapSize_ = bitmapHeight_ * bitmapStrideElements_;

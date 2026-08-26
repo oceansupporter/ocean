@@ -45,7 +45,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Bitmap
 		 * Move constructor.
 		 * @param bitmap The bitmap to move
 		 */
-		Bitmap(Bitmap&& bitmap);
+		Bitmap(Bitmap&& bitmap) noexcept;
 
 		/**
 		 * Creates a new bitmap by a given frame holding the image data.
@@ -120,13 +120,13 @@ class OCEAN_PLATFORM_WIN_EXPORT Bitmap
 		 * Returns the pixel data of the bitmap.
 		 * @return Pixel data
 		 */
-		inline const uint8_t* data() const;
+		inline const void* data() const;
 
 		/**
 		 * Returns the pixel data of the bitmap.
 		 * @return Pixel data
 		 */
-		inline uint8_t* data();
+		inline void* data();
 
 		/**
 		 * Returns the size of the bitmap's internal image buffer.
@@ -192,7 +192,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Bitmap
 		 * @param bitmap The bitmap to move
 		 * @return Reference to this object
 		 */
-		Bitmap& operator=(Bitmap&& bitmap);
+		Bitmap& operator=(Bitmap&& bitmap) noexcept;
 
 		/**
 		 * Assigns a bitmap.
@@ -246,7 +246,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Bitmap
 		FrameType::PixelOrigin bitmapPixelOrigin_ = FrameType::ORIGIN_INVALID;
 
 		/// Pixel data of the bitmap.
-		uint8_t* bitmapData_ = nullptr;
+		void* bitmapData_ = nullptr;
 
 		/// Size of the pixel buffer in bytes.
 		unsigned int bitmapSize_ = 0u;
@@ -289,12 +289,12 @@ inline HDC Bitmap::dc() const
 	return bitmapDC_;
 }
 
-inline const uint8_t* Bitmap::data() const
+inline const void* Bitmap::data() const
 {
 	return bitmapData_;
 }
 
-inline uint8_t* Bitmap::data()
+inline void* Bitmap::data()
 {
 	return bitmapData_;
 }
