@@ -21,18 +21,22 @@ namespace Win
 
 bool Taskbar::show()
 {
-	HWND handle = FindWindowA("Shell_TrayWnd", "");
+	const HWND handle = FindWindowA("Shell_TrayWnd", "");
+
 	if (handle == nullptr)
 	{
 		return false;
 	}
 
-	return ShowWindow(handle, SW_SHOW) == TRUE;
+	ShowWindow(handle, SW_SHOW);
+
+	return true;
 }
 
 bool Taskbar::hide()
 {
-	HWND handle = FindWindowA("Shell_TrayWnd", "");
+	const HWND handle = FindWindowA("Shell_TrayWnd", "");
+
 	if (handle == nullptr)
 	{
 		return false;
