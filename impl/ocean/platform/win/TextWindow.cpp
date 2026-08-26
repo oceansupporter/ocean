@@ -84,8 +84,7 @@ bool TextWindow::clearText()
 		return false;
 	}
 
-	SendMessageA(handle_, WM_CLEAR, 0, 0);
-	return true;
+	return SetWindowTextW(handle_, L"") == TRUE;
 }
 
 bool TextWindow::createWindow()
