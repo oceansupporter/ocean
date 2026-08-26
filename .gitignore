@@ -15,6 +15,7 @@ data/*
 *.VC.db-shm
 *.VC.db-wal
 *.VC.db
+.vs/
 
 # Visual Studio Android environment
 *.gradle/
