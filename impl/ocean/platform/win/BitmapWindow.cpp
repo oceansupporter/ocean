@@ -47,27 +47,28 @@ void BitmapWindow::setFrame(const Frame& frame)
 	if (!frame.isValid())
 	{
 		bitmap_.release();
-		repaint(true /*eraseBackground*/);
-
-		return;
 	}
-
-	if (bitmap_.width() == 0u || bitmap_.height() == 0u)
+	else
 	{
-		ocean_assert(width() >= clientWidth());
-		ocean_assert(height() >= clientHeight());
+		if (bitmap_.width() == 0u || bitmap_.height() == 0u)
+		{
+			ocean_assert(width() >= clientWidth());
+			ocean_assert(height() >= clientHeight());
 
-		resize(width() - clientWidth() + frame.width(), height() - clientHeight() + frame.height());
+			resize(width() - clientWidth() + frame.width(), height() - clientHeight() + frame.height());
+		}
+
+		Frame rgbFrame;
+		if (CV::FrameConverter::Comfort::convert(frame, FrameType::FORMAT_RGB24, rgbFrame, false, WorkerPool::get().scopedWorker()()))
+		{
+			const bool setFrameResult = bitmap_.set(rgbFrame);
+			ocean_assert_and_suppress_unused(setFrameResult, setFrameResult);
+
+			onResize(clientWidth(), clientHeight());
+		}
 	}
 
-	Frame rgbFrame;
-	if (CV::FrameConverter::Comfort::convert(frame, FrameType::FORMAT_RGB24, rgbFrame, false, WorkerPool::get().scopedWorker()()))
-	{
-		const bool setFrameResult = bitmap_.set(rgbFrame);
-		ocean_assert_and_suppress_unused(setFrameResult, setFrameResult);
-
-		onResize(clientWidth(), clientHeight());
-	}
+	repaint(true /*eraseBackground*/);
 }
 
 void BitmapWindow::setDisplayMode(const DisplayMode mode)
