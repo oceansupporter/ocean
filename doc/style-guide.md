@@ -169,20 +169,17 @@ denotes the end of a line. Expressions following flow control statements, e.g. `
 `do`, `while`, etc., are always written into separate lines. Because lines containing two or more
 expressions are not easy to debug they should be avoided.
 
-The resolution of modern computer displays is high enough to display far more than 150 characters
-per line. Because of that, expressions should be written into a single line rather than breaking
-them into multiple lines. If expressions are split into multiple lines they could appear as separate
-calls or expressions which may decrease the readability and cause misunderstandings. Lines of code
-*exceeding the length of 160 characters* should normally be split into multiple lines in order to avoid the need
-to scroll horizontally. Use at least one additional level of indentation at the beginning of the
-following lines to hint that the block of lines are related to the previous ones. Lines should be
-split *before* binary operators. Writing the operator at the beginning of the next line also implies
-that the current line belongs to the previous one. Conversely, it is easy to miss operators at the
-end of a line.
+Expressions should be written on a single line rather than broken across multiple lines. Split an
+expression only when the resulting structure or pattern improves readability. Arbitrary wrapping
+can make one expression appear to be several separate calls or expressions, which may cause
+misunderstandings. Use at least one additional level of indentation at the beginning of continuation
+lines to show that they belong to the preceding line. Split lines *before* binary operators. Writing
+the operator at the beginning of the next line makes the relationship explicit; operators at the end
+of a line are easy to miss.
 
-Long declarations whose parameters are straightforward may remain on one line when splitting them
-would reduce readability. The 160-character limit is therefore a strong preference rather than an
-absolute rule. Do not rely on automatic line wrapping when choosing a readable layout.
+Keep straightforward declarations and function calls on one line regardless of length unless a
+deliberate split makes their structure easier to understand. Do not rely on automatic line wrapping
+when choosing a readable layout.
 
 **Example**
 

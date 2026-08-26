@@ -14,9 +14,10 @@ These rules apply to all code below `impl/`.
 - Indent code with tabs. Do not indent namespaces.
 - Put opening and closing braces on separate lines.
 - Put one expression per line.
+- Keep an expression on one line unless a deliberate break makes a meaningful pattern clearer.
 - Put spaces around binary operators, but not unary operators.
 - Put a space after flow-control keywords: `if (...)`, `for (...)`.
-- Prefer lines of at most 160 characters. Longer straightforward declarations are permitted.
+- Do not split declarations or function calls solely because they are long; split them only when the structure improves readability.
 - Bind `*` and `&` to the type: `Type* pointer`, `Type& reference`.
 
 ## Naming
@@ -69,6 +70,8 @@ These rules apply to all code below `impl/`.
 ## Includes and portability
 
 - Use conventional include guards, not `#pragma once`.
+- In a header, include its library's common/base header first. In that common/base header itself, include the parent library's common/base header first.
+- In a source file, include its corresponding header first.
 - Include Ocean headers with quotation marks and external headers with angle brackets.
 - Group includes by source and sort each group alphabetically.
 - Put library dependencies in build files, not source-code pragmas.
