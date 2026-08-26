@@ -22,15 +22,25 @@ namespace Win
 
 IO::Directory System::currentDirectory()
 {
-	static_assert(MAX_PATH > 0, "Value of macro MAX_PATH is zero");
-	wchar_t buffer[MAX_PATH + 1];
+	const DWORD size = GetCurrentDirectoryW(0, nullptr); // including the null-terminating character
 
-	if (GetCurrentDirectoryW(MAX_PATH, buffer) == 0)
+	if (size <= 1)
 	{
 		return IO::Directory();
 	}
 
-	return IO::Directory(String::toAString(buffer));
+	std::vector<wchar_t> buffer(size);
+
+	const DWORD written = GetCurrentDirectoryW(DWORD(buffer.size()), buffer.data()); // not including the null-terminating character
+
+	if (written >= DWORD(buffer.size()))
+	{
+		return IO::Directory();
+	}
+
+	ocean_assert(buffer.back() == wchar_t(0));
+
+	return IO::Directory(String::toAString(buffer.data()));
 }
 
 IO::Directory System::processDirectory()
