@@ -81,10 +81,7 @@ class OCEAN_PLATFORM_WIN_EXPORT Keyboard : Platform::Keyboard
 
 inline bool Keyboard::keyState(const int nVirtualKey, const bool synchron)
 {
-	// If the high-order bit is 1, the key is down; otherwise, it is up
-
-	static_assert(sizeof(SHORT) == 2);
-	constexpr SHORT highOrderBit = SHORT(0x8000);
+	constexpr int highOrderBit = 0x8000; // if the high-order bit is 1, the key is down; otherwise, it is up
 
 	SHORT result = 0;
 
@@ -97,7 +94,7 @@ inline bool Keyboard::keyState(const int nVirtualKey, const bool synchron)
 		result = GetAsyncKeyState(nVirtualKey);
 	}
 
-	return (result & highOrderBit) != 0;
+	return (int(result) & highOrderBit) != 0;
 }
 
 }
