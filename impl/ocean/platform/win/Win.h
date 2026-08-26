@@ -54,6 +54,11 @@ namespace Win
 #endif
 
 /**
+ * Definition of a scoped object holding a module handle.
+ */
+using ScopedHMODULE = ScopedObjectCompileTimeT<HMODULE, HMODULE, BOOL, FreeLibrary, TRUE, true, nullptr>;
+
+/**
  * Definition of a scoped object holding a window handle.
  * The object calls DestroyWindow() when releasing a valid handle, so it must be destroyed by the thread that created the window.
  */

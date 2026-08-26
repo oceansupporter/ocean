@@ -57,6 +57,13 @@ bool Resource::extractResource(const HMODULE module, const unsigned int resource
 	return true;
 }
 
+FrameRef ResourceManager::frame(const unsigned int resourceId, const std::wstring& type)
+{
+	const ScopedHMODULE scopedModule = System::currentLibraryModule();
+
+	return frame(resourceId, type, scopedModule.object());
+}
+
 FrameRef ResourceManager::frame(const unsigned int resourceId, const std::wstring& type, const HMODULE module)
 {
 	const ScopedLock scopedLock(lock_);

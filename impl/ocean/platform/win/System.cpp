@@ -57,27 +57,22 @@ IO::Directory System::processDirectory()
 	return IO::Directory(applicationFile);
 }
 
-HMODULE System::currentLibraryModule()
+ScopedHMODULE System::currentLibraryModule()
 {
-	HMODULE handle = nullptr;
+	ScopedHMODULE scopedModule;
 
-	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)System::currentLibraryModule, &handle) == TRUE)
+	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, LPCTSTR(System::currentLibraryModule), &scopedModule.resetObject()) == TRUE)
 	{
 		// now we check whether the calling process is the application or a library
-		if (GetModuleHandle(nullptr) == handle)
+		if (GetModuleHandle(nullptr) == scopedModule.object())
 		{
-			// the msdn documentation does not state whether a module handle of a process has to be released
-			// however, several tests showed that a FreeLibrary() call does not have any negative effect
-			const BOOL result = FreeLibrary(handle);
-			ocean_assert_and_suppress_unused(result == TRUE, result);
-
-			return nullptr;
+			return ScopedHMODULE();
 		}
 
-		return handle;
+		return scopedModule;
 	}
 
-	return nullptr;
+	return ScopedHMODULE();
 }
 
 std::wstring System::moduleName(const HMODULE handle)

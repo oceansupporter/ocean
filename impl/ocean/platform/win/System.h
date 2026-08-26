@@ -43,11 +43,10 @@ class OCEAN_PLATFORM_WIN_EXPORT System
 
 		/**
 		 * Returns the handle to the calling module (a runtime library).
-		 * This function returns nullptr if the calling module is an application.<br>
-		 * Every valid module handle must be released by an explicit FreeLibrary() call.<br>
-		 * @return The handle of the calling module library, nullptr otherwise
+		 * This function returns an invalid scoped handle if the calling module is an application.<br>
+		 * @return The scoped handle of the calling module library, an invalid scoped handle otherwise
 		 */
-		static HMODULE currentLibraryModule();
+		static ScopedHMODULE currentLibraryModule();
 
 		/**
 		 * Returns the corresponding name (the filename) of a given module handle.

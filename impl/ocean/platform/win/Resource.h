@@ -69,13 +69,21 @@ class OCEAN_PLATFORM_WIN_EXPORT ResourceManager : public Singleton<ResourceManag
 	public:
 
 		/**
-		 * Returns a specific resource frame.
+		 * Returns a specific resource frame from the calling module.
+		 * @param resourceId The id of the resource
+		 * @param type The type of the frame, e.g., PNG, BMP, etc.
+		 * @return The resource frame, if any
+		 */
+		FrameRef frame(const unsigned int resourceId, const std::wstring& type);
+
+		/**
+		 * Returns a specific resource frame from a specified module.
 		 * @param resourceId The id of the resource
 		 * @param type The type of the frame, e.g., PNG, BMP, etc.
 		 * @param module The handle of the module from which the resource is requested, nullptr to extract the resource from the module which created the current process
 		 * @return The resource frame, if any
 		 */
-		FrameRef frame(const unsigned int resourceId, const std::wstring& type, const HMODULE module = System::currentLibraryModule());
+		FrameRef frame(const unsigned int resourceId, const std::wstring& type, const HMODULE module);
 
 		/**
 		 * Releases the entire resources of this manager.
