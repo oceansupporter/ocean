@@ -412,10 +412,17 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			break;
 
 		case WM_SIZE:
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				window->onMinimize();
+			}
+
 			ocean_assert(LOWORD(lParam) >= 0);
 			ocean_assert(HIWORD(lParam) >= 0);
 			window->onResize(LOWORD(lParam), HIWORD(lParam));
 			break;
+		}
 
 		case WM_KEYDOWN:
 			window->onKeyDown(int(wParam));
@@ -510,7 +517,7 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		}
 
 		case WM_CANCELMODE:
-			window->onMinimize();
+			// nothing to do here
 			break;
 
 		case WM_DESTROY:
