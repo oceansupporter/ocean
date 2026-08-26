@@ -33,8 +33,9 @@ void FIBBitmapWindow::setFrame(const Frame& frame)
 
 void FIBBitmapWindow::modifyWindowClass(WNDCLASSW& windowClass)
 {
-	// suppress window background redrawing
-	windowClass.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
+	// erase the window background in black
+	windowClass.hbrBackground = HBRUSH(GetStockObject(BLACK_BRUSH));
+	ocean_assert(windowClass.hbrBackground != nullptr);
 }
 
 void FIBBitmapWindow::onResize(const unsigned int clientWidth, const unsigned int clientHeight)
