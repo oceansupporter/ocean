@@ -46,6 +46,11 @@ bool Resource::extractResource(const HMODULE module, const unsigned int resource
 
 	const void* resourceData = LockResource(resourceHandle);
 
+	if (resourceData == nullptr)
+	{
+		return false;
+	}
+
 	buffer.resize(resourceSize);
 	memcpy(buffer.data(), resourceData, resourceSize);
 
