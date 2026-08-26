@@ -286,24 +286,24 @@ class OCEAN_PLATFORM_WIN_EXPORT Window
 		/**
 		 * Function for mouse double click events.
 		 * @param button Specifies the mouse button
-		 * @param x Specifies the x position of the cursor
-		 * @param y Specifies the y position of the cursor
+		 * @param x The horizontal cursor position relative to the client area
+		 * @param y The vertical cursor position relative to the client area
 		 */
 		virtual void onMouseDoubleClick(const MouseButton button, const int x, const int y);
 
 		/**
 		 * Function for mouse button down events.
 		 * @param button Specifies the mouse button
-		 * @param x Specifies the x position of the cursor
-		 * @param y Specifies the y position of the cursor
+		 * @param x The horizontal cursor position relative to the client area
+		 * @param y The vertical cursor position relative to the client area
 		 */
 		virtual void onMouseDown(const MouseButton button, const int x, const int y);
 
 		/**
 		 * Function for mouse move event.
 		 * @param buttons Holds all pushed mouse buttons
-		 * @param x Specifies the x position of the cursor
-		 * @param y Specifies the y position of the cursor
+		 * @param x The horizontal cursor position relative to the client area
+		 * @param y The vertical cursor position relative to the client area
 		 */
 		virtual void onMouseMove(const MouseButton buttons, const int x, const int y);
 
@@ -316,8 +316,8 @@ class OCEAN_PLATFORM_WIN_EXPORT Window
 		/**
 		 * Function for mouse button up events.
 		 * @param button Specifies the mouse button
-		 * @param x Specifies the x position of the cursor
-		 * @param y Specifies the y position of the cursor
+		 * @param x The horizontal cursor position relative to the client area
+		 * @param y The vertical cursor position relative to the client area
 		 */
 		virtual void onMouseUp(const MouseButton button, const int x, const int y);
 
@@ -325,8 +325,8 @@ class OCEAN_PLATFORM_WIN_EXPORT Window
 		 * Functions for mouse wheel events.
 		 * @param buttons Holds all pushed mouse buttons
 		 * @param wheel Specifies the wheel delta value
-		 * @param x Specifies the x position of the cursor
-		 * @param y Specifies the y position of the cursor
+		 * @param x The horizontal cursor position relative to the client area
+		 * @param y The vertical cursor position relative to the client area
 		 */
 		virtual void onMouseWheel(const MouseButton buttons, const int wheel, const int x, const int y);
 

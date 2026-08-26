@@ -10,6 +10,7 @@
 #include "ocean/base/String.h"
 
 #include <shellapi.h>
+#include <windowsx.h>
 
 namespace Ocean
 {
@@ -425,35 +426,35 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			break;
 
 		case WM_LBUTTONDBLCLK:
-			window->onMouseDoubleClick(BUTTON_LEFT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseDoubleClick(BUTTON_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_LBUTTONDOWN:
-			window->onMouseDown(BUTTON_LEFT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseDown(BUTTON_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_LBUTTONUP:
-			window->onMouseUp(BUTTON_LEFT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseUp(BUTTON_LEFT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_MBUTTONDOWN:
-			window->onMouseDown(BUTTON_MIDDLE, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseDown(BUTTON_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_MBUTTONUP:
-			window->onMouseUp(BUTTON_MIDDLE, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseUp(BUTTON_MIDDLE, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_RBUTTONDBLCLK:
-			window->onMouseDoubleClick(BUTTON_RIGHT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseDoubleClick(BUTTON_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_RBUTTONDOWN:
-			window->onMouseDown(BUTTON_RIGHT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseDown(BUTTON_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_RBUTTONUP:
-			window->onMouseUp(BUTTON_RIGHT, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseUp(BUTTON_RIGHT, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 
 		case WM_MOUSEMOVE:
@@ -473,7 +474,7 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				mouseButtons = MouseButton(mouseButtons | BUTTON_RIGHT);
 			}
 
-			window->onMouseMove(mouseButtons, LOWORD(lParam), HIWORD(lParam));
+			window->onMouseMove(mouseButtons, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 		}
 
@@ -481,7 +482,7 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		{
 			MouseButton mouseButtons = BUTTON_NONE;
 
-			unsigned int buttonState = LOWORD(wParam);
+			const int buttonState = GET_KEYSTATE_WPARAM(wParam);
 			if (buttonState & MK_LBUTTON)
 			{
 				mouseButtons = MouseButton(mouseButtons | BUTTON_LEFT);
@@ -495,7 +496,16 @@ LRESULT CALLBACK Window::windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				mouseButtons = MouseButton(mouseButtons | BUTTON_RIGHT);
 			}
 
-			window->onMouseWheel(mouseButtons, short(HIWORD(wParam)), LOWORD(lParam), HIWORD(lParam));
+			POINT point;
+			point.x = GET_X_LPARAM(lParam);
+			point.y = GET_Y_LPARAM(lParam);
+
+			if (ScreenToClient(hWnd, &point) == FALSE)
+			{
+				break;
+			}
+
+			window->onMouseWheel(mouseButtons, GET_WHEEL_DELTA_WPARAM(wParam), point.x, point.y);
 			break;
 		}
 
