@@ -373,6 +373,27 @@ std::string* stringPointer = &stringObject;
 std::string stringObject2 = *stringPointer;
 ```
 
+### Type conversions
+
+For routine, unambiguous explicit value conversions, use functional type notation in the form
+`Type(value)`. This notation is concise and clearly states the destination type without giving an
+ordinary conversion unnecessary visual emphasis.
+
+**Example**
+
+```cpp
+const size_t index = size_t(signedIndex);
+const NativeCharacter separator = NativeCharacter('/');
+```
+
+Use `static_cast` when a change in data type is important enough that it must be highlighted
+explicitly to the reader. Use `const_cast`, `reinterpret_cast`, and `dynamic_cast` only when their
+specific semantics are required. These named casts communicate operations that cannot be expressed
+as an ordinary value conversion and should remain visually prominent.
+
+Do not use C-style casts. They can combine several conversion categories and make the intended
+operation difficult to identify during review.
+
 ### Suffixes
 
 Numeric literals must always be accompanied by their corresponding suffices. Failing to add the type
@@ -411,6 +432,11 @@ global functions are indicators for bad design and bad code structure. Instead u
 static functions, which are globally accessible as well. Classes with only (public) static functions
 is practically equivalent to a namespace, but avoid the creation of artificial hierarchies of
 namespaces.
+
+Avoid anonymous namespaces. A helper function that does not depend on object state must be declared
+as a static function of the corresponding class, using public or protected visibility as appropriate.
+This keeps the function discoverable and allows its contract to be documented in the corresponding
+header file.
 
 Use `inline` where a function definition in a header requires it to satisfy the one-definition
 rule. A function defined inside a class definition is implicitly inline and does not need the
@@ -530,6 +556,9 @@ namespaces helps to avoid duplicate or ambiguous function names, variables, clas
 Except for rare occasions, each library must define its own namespace. The name of the library must
 match that of the corresponding namespace. Each library must define a unique namespace and every
 code file contains exactly one namespace or one hierarchy of namespaces.
+
+Do not introduce an anonymous namespace inside that namespace hierarchy. File-local helper behavior
+belongs in a documented static function of the corresponding class.
 
 In general, avoid `using` statements in the context of namespaces. This is particularly true for
 third party libraries, e.g. the C++ Standard Library. If absolutely required, the `using` statement
@@ -713,6 +742,11 @@ classes apply.
 
 Overloaded operators are declared *after* the declaration of the regular member functions. The
 declarations of static functions follow after the declaration of the overloaded operators.
+
+Definitions in a source file must appear in the same order as their declarations in the corresponding
+header file. Preserving the order makes it straightforward to locate a definition after finding its
+declaration. This applies to constructors, regular member functions, overloaded operators, and static
+member functions.
 
 A block structure of class declarations like the one described above makes it easy for developers to
 get familiar with classes that were written by other developers.

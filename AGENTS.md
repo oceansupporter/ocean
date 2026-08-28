@@ -35,6 +35,7 @@ These rules apply to all code below `impl/`.
 - Use `nullptr`, never `NULL` or `0`, for null pointers.
 - Use `using Name = Type`, not `typedef`, in new code.
 - Use explicit variable types. Do not use `auto` unless an explicit type cannot reasonably be written.
+- Use `Type(value)` for routine, unambiguous explicit conversions. Use `static_cast` only when the change in data type needs to be highlighted explicitly; use the other named C++ casts only when their specific semantics are required. Do not use C-style casts.
 - Prefer references for required non-null objects and pointers for optional objects.
 - Express ownership with an owning type; raw pointers and references do not express ownership.
 - Make values `const` when they do not change.
@@ -48,10 +49,18 @@ These rules apply to all code below `impl/`.
 - Use a lambda only when required as a short, local, self-explanatory callable.
 - Lambda captures must be explicit and minimal. Do not use `[&]` or `[=]`.
 - Do not put complex control flow or independently documentable behavior in a lambda.
+- Avoid anonymous namespaces. Implement helper functions as static member functions of the corresponding class, using public or protected visibility as appropriate.
 - Keep declarations and definitions separate except for templates and inline functions.
+- Define functions in a source file in the same order as their declarations in the corresponding header file.
+- Put `// nothing to do here` in every intentionally empty function body, including constructors.
 - Do not expose public data members.
 - Setter names start with `set`; getter names normally omit `get`.
 - Declare functions `static` when they do not depend on object state.
+
+## Shell and tooling
+
+- On Windows, do not redirect output to `$null` or `NUL`; shell wrappers may create a literal file with that name. For PowerShell cmdlets, use `-ErrorAction SilentlyContinue` when appropriate; for command output, use a pipeline to `Out-Null`.
+- Remove temporary build, test, and redirection artifacts created while working before finishing.
 
 ## Documentation and validation
 
