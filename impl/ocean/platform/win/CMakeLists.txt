@@ -64,7 +64,7 @@ if (WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/win
+            DESTINATION include/ocean/platform/win
             COMPONENT include
     )
 

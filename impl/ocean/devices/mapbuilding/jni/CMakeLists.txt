@@ -37,7 +37,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/devices/mapbuilding/jni
+            DESTINATION include/ocean/devices/mapbuilding/jni
             COMPONENT include
     )
 

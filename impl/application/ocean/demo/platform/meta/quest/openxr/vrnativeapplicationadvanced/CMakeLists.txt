@@ -48,7 +48,7 @@ if (ANDROID)
         )
 
         install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/platform/meta/quest/openxr/vrnativeapplicationadvanced/quest
+            DESTINATION include/application/ocean/demo/platform/meta/quest/openxr/vrnativeapplicationadvanced/quest
             COMPONENT include
         )
 

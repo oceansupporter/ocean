@@ -32,7 +32,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/android
+            DESTINATION include/ocean/rendering/glescenegraph/android
             COMPONENT include
     )
 

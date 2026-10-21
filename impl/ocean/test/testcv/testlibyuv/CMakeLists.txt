@@ -64,7 +64,7 @@ if (MACOS OR ANDROID OR IOS OR LINUX)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/test/testcv/testlibyuv
+            DESTINATION include/ocean/test/testcv/testlibyuv
             COMPONENT include
     )
 

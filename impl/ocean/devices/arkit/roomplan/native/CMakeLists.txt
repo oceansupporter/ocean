@@ -49,7 +49,7 @@ if (IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/devices/arkit/roomplan/native
+            DESTINATION include/ocean/devices/arkit/roomplan/native
             COMPONENT include
     )
 

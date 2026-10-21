@@ -44,7 +44,7 @@ if (WIN32 AND NOT BUILD_SHARED_LIBS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/windows
+            DESTINATION include/ocean/rendering/glescenegraph/windows
             COMPONENT include
     )
 

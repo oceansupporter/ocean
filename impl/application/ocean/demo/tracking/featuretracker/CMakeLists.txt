@@ -74,7 +74,7 @@ if (ANDROID OR IOS OR MACOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/featuretracker
+        DESTINATION include/application/ocean/demo/tracking/featuretracker
         COMPONENT include
     )
 
@@ -126,7 +126,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/featuretracker/android
+        DESTINATION include/application/ocean/demo/tracking/featuretracker/android
         COMPONENT include
     )
 

@@ -56,7 +56,7 @@ if (APPLE OR ANDROID OR IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/tracking/maptexturing
+            DESTINATION include/ocean/tracking/maptexturing
             COMPONENT include
     )
 

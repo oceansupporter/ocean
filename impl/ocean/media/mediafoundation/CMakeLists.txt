@@ -54,7 +54,7 @@ if (WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/media/mediafoundation
+            DESTINATION include/ocean/media/mediafoundation
             COMPONENT include
     )
 

@@ -59,7 +59,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/media/videopreview/android
+        DESTINATION include/application/ocean/demo/media/videopreview/android
         COMPONENT include
     )
 

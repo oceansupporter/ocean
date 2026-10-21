@@ -82,7 +82,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/test/cv/testcv/testadvanced/android
+            DESTINATION include/application/ocean/test/cv/testcv/testadvanced/android
             COMPONENT include
     )
 

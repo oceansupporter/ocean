@@ -54,7 +54,7 @@ if (IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/devices/arkit
+            DESTINATION include/ocean/devices/arkit
             COMPONENT include
     )
 

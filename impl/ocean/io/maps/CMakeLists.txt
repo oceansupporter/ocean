@@ -53,7 +53,7 @@ if ((MACOS OR ANDROID OR IOS OR LINUX OR WIN32) AND VTZERO_INCLUDE_DIR AND PROTO
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/io/maps
+            DESTINATION include/ocean/io/maps
             COMPONENT include
     )
 

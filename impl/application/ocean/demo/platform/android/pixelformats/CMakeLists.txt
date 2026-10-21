@@ -47,7 +47,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/platform/android/pixelformats
+        DESTINATION include/application/ocean/demo/platform/android/pixelformats
         COMPONENT include
     )
 

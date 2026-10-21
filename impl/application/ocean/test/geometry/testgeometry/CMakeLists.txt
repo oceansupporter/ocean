@@ -81,7 +81,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/test/geometry/testgeometry/android
+            DESTINATION include/application/ocean/test/geometry/testgeometry/android
             COMPONENT include
     )
 

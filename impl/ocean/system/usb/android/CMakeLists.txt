@@ -49,7 +49,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/system/usb/android
+            DESTINATION include/ocean/system/usb/android
             COMPONENT include
     )
 

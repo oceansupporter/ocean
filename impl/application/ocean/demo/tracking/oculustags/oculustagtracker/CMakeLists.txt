@@ -50,7 +50,7 @@ if (MACOS OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/oculustags/oculustagtracker
+        DESTINATION include/application/ocean/demo/tracking/oculustags/oculustagtracker
         COMPONENT include
     )
 

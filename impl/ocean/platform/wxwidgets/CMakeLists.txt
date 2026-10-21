@@ -262,7 +262,7 @@ if (MACOS OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/wxwidgets
+            DESTINATION include/ocean/platform/wxwidgets
             COMPONENT include
     )
 

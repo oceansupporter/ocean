@@ -55,7 +55,7 @@ if (ANDROID)
         )
 
         install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/media/externalcamera/quest
+            DESTINATION include/application/ocean/demo/media/externalcamera/quest
             COMPONENT include
         )
 
@@ -105,7 +105,7 @@ if (ANDROID)
         )
 
         install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/media/externalcamera/quest
+            DESTINATION include/application/ocean/demo/media/externalcamera/quest
             COMPONENT include
         )
 

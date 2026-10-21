@@ -66,7 +66,7 @@ if (LINUX OR MACOS OR WIN32)
         )
 
         install(FILES ${OCEAN_TARGET_HEADER_FILES}
-                DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/qt
+                DESTINATION include/ocean/rendering/glescenegraph/qt
                 COMPONENT include
         )
 

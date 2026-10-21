@@ -70,7 +70,7 @@ if ((MACOS OR IOS OR LINUX OR WIN32) AND VTZERO_INCLUDE_DIR)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/test/testio/testmaps
+            DESTINATION include/ocean/test/testio/testmaps
             COMPONENT include
     )
 

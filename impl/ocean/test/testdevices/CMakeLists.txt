@@ -54,7 +54,7 @@ if (MACOS OR ANDROID OR IOS OR LINUX OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/test/testdevices
+            DESTINATION include/ocean/test/testdevices
             COMPONENT include
     )
 

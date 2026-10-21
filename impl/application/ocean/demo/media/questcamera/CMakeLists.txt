@@ -57,7 +57,7 @@ if (ANDROID AND QUEST)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/media/questcamera/quest
+        DESTINATION include/application/ocean/demo/media/questcamera/quest
         COMPONENT include
     )
 

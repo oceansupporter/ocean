@@ -43,7 +43,7 @@ if (MACOS OR ANDROID OR IOS OR LINUX OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/cv/advanced
+            DESTINATION include/ocean/cv/advanced
             COMPONENT include
     )
 

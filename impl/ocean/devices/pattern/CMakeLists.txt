@@ -52,7 +52,7 @@ if (MACOS OR ANDROID OR IOS OR LINUX OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/devices/pattern
+            DESTINATION include/ocean/devices/pattern
             COMPONENT include
     )
 

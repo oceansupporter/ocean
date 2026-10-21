@@ -44,7 +44,7 @@ if (MACOS OR IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/apple
+            DESTINATION include/ocean/rendering/glescenegraph/apple
             COMPONENT include
     )
 

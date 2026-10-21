@@ -37,7 +37,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/media/openimagelibraries/jni
+            DESTINATION include/ocean/media/openimagelibraries/jni
             COMPONENT include
     )
 

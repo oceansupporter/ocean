@@ -36,7 +36,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/media/android/jni
+            DESTINATION include/ocean/media/android/jni
             COMPONENT include
     )
 

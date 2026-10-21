@@ -76,7 +76,7 @@ if (ANDROID OR IOS OR LINUX OR MACOS OR WIN32)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/scenedescription/sdx/x3d
+        DESTINATION include/ocean/scenedescription/sdx/x3d
         COMPONENT include
     )
 

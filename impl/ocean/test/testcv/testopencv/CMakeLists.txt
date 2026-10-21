@@ -83,7 +83,7 @@ if (MACOS OR ANDROID OR IOS OR LINUX)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/test/testcv/testopencv
+            DESTINATION include/ocean/test/testcv/testopencv
             COMPONENT include
     )
 

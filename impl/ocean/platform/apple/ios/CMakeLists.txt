@@ -55,7 +55,7 @@ if (IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/apple/ios
+            DESTINATION include/ocean/platform/apple/ios
             COMPONENT include
     )
 

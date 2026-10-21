@@ -58,7 +58,7 @@ if (MACOS OR ANDROID OR IOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/gles
+            DESTINATION include/ocean/platform/gles
             COMPONENT include
     )
 

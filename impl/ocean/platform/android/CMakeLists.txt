@@ -46,7 +46,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/android
+            DESTINATION include/ocean/platform/android
             COMPONENT include
     )
 

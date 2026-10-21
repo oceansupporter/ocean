@@ -62,7 +62,7 @@ if (ANDROID OR IOS OR MACOS OR WINDOWS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/linedetector
+        DESTINATION include/application/ocean/demo/cv/detector/linedetector
         COMPONENT include
     )
 
@@ -120,7 +120,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/linedetector/android
+        DESTINATION include/application/ocean/demo/cv/detector/linedetector/android
         COMPONENT include
     )
 

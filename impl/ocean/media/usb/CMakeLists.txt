@@ -50,7 +50,7 @@ if (ANDROID OR MACOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/media/usb
+            DESTINATION include/ocean/media/usb
             COMPONENT include
     )
 

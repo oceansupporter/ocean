@@ -74,7 +74,7 @@ if (ANDROID OR IOS OR MACOS OR WINDOWS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/similaritytracker
+        DESTINATION include/application/ocean/demo/tracking/similaritytracker
         COMPONENT include
     )
 
@@ -190,7 +190,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/similaritytracker/android
+        DESTINATION include/application/ocean/demo/tracking/similaritytracker/android
         COMPONENT include
     )
 

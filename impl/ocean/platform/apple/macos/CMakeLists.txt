@@ -43,7 +43,7 @@ if (MACOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/apple/macos
+            DESTINATION include/ocean/platform/apple/macos
             COMPONENT include
     )
 

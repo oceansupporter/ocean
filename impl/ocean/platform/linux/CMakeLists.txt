@@ -36,7 +36,7 @@ if (ANDROID OR LINUX)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/linux
+            DESTINATION include/ocean/platform/linux
             COMPONENT include
     )
 

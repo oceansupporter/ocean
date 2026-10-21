@@ -63,7 +63,7 @@ if (ANDROID OR IOS OR MACOS OR WINDOWS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/messengercode
+        DESTINATION include/application/ocean/demo/cv/detector/messengercode
         COMPONENT include
     )
 
@@ -113,7 +113,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/messengercode/android
+        DESTINATION include/application/ocean/demo/cv/detector/messengercode/android
         COMPONENT include
     )
 

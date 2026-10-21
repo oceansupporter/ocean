@@ -24,7 +24,7 @@ install(IMPORTED_RUNTIME_ARTIFACTS arcore
 )
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/arcore_c_api.h
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    DESTINATION include
     COMPONENT include
 )
 

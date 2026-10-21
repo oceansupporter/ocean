@@ -71,7 +71,7 @@ if (ANDROID OR IOS OR MACOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/homographyimagealigner
+        DESTINATION include/application/ocean/demo/tracking/homographyimagealigner
         COMPONENT include
     )
 
@@ -191,7 +191,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/tracking/homographyimagealigner/android
+        DESTINATION include/application/ocean/demo/tracking/homographyimagealigner/android
         COMPONENT include
     )
 

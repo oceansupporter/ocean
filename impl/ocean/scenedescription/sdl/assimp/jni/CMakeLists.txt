@@ -37,7 +37,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/scenedescription/sdl/assimp/jni
+        DESTINATION include/ocean/scenedescription/sdl/assimp/jni
         COMPONENT include
     )
 

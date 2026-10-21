@@ -55,7 +55,7 @@ cmake_minimum_required(VERSION 3.26)
 #     )
 
 #     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-#             DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/devices/arkit/roomplan/swift
+#             DESTINATION include/ocean/devices/arkit/roomplan/swift
 #             COMPONENT include
 #     )
 

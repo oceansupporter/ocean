@@ -55,7 +55,7 @@ if (ANDROID OR IOS OR MACOS)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/qrcodes/detector2d
+        DESTINATION include/application/ocean/demo/cv/detector/qrcodes/detector2d
         COMPONENT include
     )
 
@@ -173,7 +173,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/application/ocean/demo/cv/detector/qrcodes/detector2d/android
+        DESTINATION include/application/ocean/demo/cv/detector/qrcodes/detector2d/android
         COMPONENT include
     )
 

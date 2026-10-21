@@ -47,7 +47,7 @@ if (ANDROID)
     )
 
     install(FILES ${OCEAN_TARGET_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/platform/meta/quest/openxr
+            DESTINATION include/ocean/platform/meta/quest/openxr
             COMPONENT include
     )
 

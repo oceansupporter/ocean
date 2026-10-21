@@ -40,12 +40,12 @@ if (ANDROID)
     )
 
     install(FILES ${QUEST_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/quest
+            DESTINATION include/ocean/rendering/glescenegraph/quest
             COMPONENT include
     )
 
     install(FILES ${QUEST_OPENXR_HEADER_FILES}
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/ocean/rendering/glescenegraph/quest/openxr
+            DESTINATION include/ocean/rendering/glescenegraph/quest/openxr
             COMPONENT include
     )
 
