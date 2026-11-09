@@ -22,6 +22,9 @@ if (IOS)
     # Target definition
     add_library(${OCEAN_TARGET_NAME} ${OCEAN_TARGET_SOURCE_FILES} ${OCEAN_TARGET_HEADER_FILES})
 
+    # The library has no Swift code, but it links the Swift library of RoomPlan, whose language CMake would otherwise select for linking
+    set_target_properties(${OCEAN_TARGET_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+
     target_include_directories(${OCEAN_TARGET_NAME} PUBLIC "${OCEAN_IMPL_DIR}")
 
     target_compile_definitions(${OCEAN_TARGET_NAME} PUBLIC ${OCEAN_PREPROCESSOR_FLAGS})
@@ -37,8 +40,10 @@ if (IOS)
         PUBLIC
             ocean_base
             ocean_devices
+            ocean_devices_arkit_roomplan_native
+            ocean_devices_arkit_roomplan_swift
             ocean_math
-            ocean_devices_avfoundation
+            ocean_media_avfoundation
     )
 
     target_link_libraries(${OCEAN_TARGET_NAME}
